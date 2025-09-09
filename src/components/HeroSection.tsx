@@ -15,11 +15,7 @@ const HeroSection: React.FC = () => {
       {/* Main content */}
       <div className="relative z-10 text-center px-8 max-w-4xl">
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-          Security Foundations:
-          <br />
-          <span className="text-blue-100">
-            Guarding Against AI-powered Attacks
-          </span>
+          <span className="text-blue-100">The Microsoft 365 Copilot Experience</span>
         </h1>
         
         <div className="flex items-center justify-center space-x-4 text-white/80 text-sm">

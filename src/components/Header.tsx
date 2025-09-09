@@ -19,10 +19,10 @@ const Header: React.FC = () => {
 
         {/* Breadcrumb Navigation */}
         <nav className="flex items-center ml-8 text-sm text-gray-600">
-          <span className="hover:text-ms-blue cursor-pointer">Sunit Carpenter Learning</span>
+          <span className="hover:text-ms-blue cursor-pointer text-base">Sunit Carpenter Learning</span>
           <ChevronRight className="h-4 w-4 mx-2 text-gray-400" />
-          <span className="text-gray-900 font-medium">
-            Security Foundations: Guarding Against AI-powered Attacks
+          <span className="text-gray-900 font-medium text-base">
+            The Microsoft 365 Copilot Experience
           </span>
         </nav>
       </div>

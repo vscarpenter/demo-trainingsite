@@ -1,8 +1,13 @@
 import React from 'react';
 import { Menu, FileText, BookOpen } from 'lucide-react';
-import CourseOutline from './CourseOutline';
+import ContentOutline from './ContentOutline';
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+  currentContentId?: string;
+  onContentSelect?: (contentId: string) => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ currentContentId, onContentSelect }) => {
   const [activeTab, setActiveTab] = React.useState('MENU');
 
   const tabs = [
@@ -13,21 +18,7 @@ const Sidebar: React.FC = () => {
 
   return (
     <aside className="w-80 bg-white sidebar-shadow flex flex-col h-full">
-      {/* Microsoft Logo Section */}
-      <div className="p-4 border-b border-gray-200">
-        <div className="flex items-center space-x-3">
-          <div className="microsoft-logo-squares">
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-          </div>
-          <div>
-            <div className="text-sm font-semibold text-gray-900">Microsoft</div>
-            <div className="text-xs text-gray-600">Sunit Carpenter Learning</div>
-          </div>
-        </div>
-      </div>
+      {/* Sidebar Header removed per request */}
 
       {/* Navigation Tabs */}
       <div className="border-b border-gray-200">
@@ -62,9 +53,12 @@ const Sidebar: React.FC = () => {
           {activeTab === 'MENU' && (
             <div>
               <h3 className="text-sm font-semibold text-gray-900 mb-4">
-                Security Foundations: Guarding Against AI-powered Attacks
+                Microsoft 365 Copilot Experience
               </h3>
-              <CourseOutline />
+              <ContentOutline 
+                currentContentId={currentContentId}
+                onContentSelect={onContentSelect}
+              />
             </div>
           )}
           
