@@ -1,11 +1,29 @@
 import React from 'react';
-import { Search, HelpCircle, Settings, User, X, ChevronRight } from 'lucide-react';
+import { Search, HelpCircle, Settings, User, X, ChevronRight, Menu } from 'lucide-react';
 import { Button } from './ui/button';
+import { SITE_NAME, COURSE_TITLE } from '@/lib/constants';
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  onToggleSidebar?: () => void;
+  isSidebarOpen?: boolean;
+}
+
+const Header: React.FC<HeaderProps> = ({ onToggleSidebar, isSidebarOpen }) => {
   return (
     <header className="bg-white border-b border-gray-200 h-12 flex items-center px-4 relative z-10">
       <div className="flex items-center flex-1">
+        {/* Mobile sidebar toggle */}
+        <Button
+          aria-label="Toggle menu"
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 mr-2 md:hidden"
+          onClick={onToggleSidebar}
+          aria-expanded={isSidebarOpen}
+          aria-controls="app-sidebar"
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
         {/* Microsoft Logo */}
         <div className="flex items-center space-x-3">
           <div className="microsoft-logo-squares">
@@ -18,30 +36,36 @@ const Header: React.FC = () => {
         </div>
 
         {/* Breadcrumb Navigation */}
-        <nav className="flex items-center ml-8 text-sm text-gray-600">
-          <span className="hover:text-ms-blue cursor-pointer text-base">Sunit Carpenter Learning</span>
-          <ChevronRight className="h-4 w-4 mx-2 text-gray-400" />
-          <span className="text-gray-900 font-medium text-base">
-            The Microsoft 365 Copilot Experience
-          </span>
+        <nav className="ml-8 text-sm text-gray-600" aria-label="Breadcrumb">
+          <ol className="flex items-center">
+            <li>
+              <span className="hover:text-ms-blue cursor-pointer text-base">{SITE_NAME}</span>
+            </li>
+            <li aria-hidden="true" className="px-2">
+              <ChevronRight className="h-4 w-4 text-gray-400" />
+            </li>
+            <li aria-current="page">
+              <span className="text-gray-900 font-medium text-base">{COURSE_TITLE}</span>
+            </li>
+          </ol>
         </nav>
       </div>
 
       {/* Right Side Controls */}
       <div className="flex items-center space-x-2">
-        <Button variant="ghost" size="icon" className="h-8 w-8">
+        <Button aria-label="Search" variant="ghost" size="icon" className="h-8 w-8">
           <Search className="h-4 w-4" />
         </Button>
-        <Button variant="ghost" size="icon" className="h-8 w-8">
+        <Button aria-label="Help" variant="ghost" size="icon" className="h-8 w-8">
           <HelpCircle className="h-4 w-4" />
         </Button>
-        <Button variant="ghost" size="icon" className="h-8 w-8">
+        <Button aria-label="Settings" variant="ghost" size="icon" className="h-8 w-8">
           <Settings className="h-4 w-4" />
         </Button>
-        <Button variant="ghost" size="icon" className="h-8 w-8">
+        <Button aria-label="Account" variant="ghost" size="icon" className="h-8 w-8">
           <User className="h-4 w-4" />
         </Button>
-        <Button variant="ghost" size="icon" className="h-8 w-8">
+        <Button aria-label="Close" variant="ghost" size="icon" className="h-8 w-8">
           <X className="h-4 w-4" />
         </Button>
       </div>

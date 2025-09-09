@@ -36,33 +36,11 @@ const ContentViewer: React.FC<ContentViewerProps> = ({
       const response = await fetch(content.filePath);
       if (response.ok) {
         const html = await response.text();
-        // Fix relative paths in HTML content for iframe srcDoc
         const basePath = content.filePath.substring(0, content.filePath.lastIndexOf('/') + 1);
-        const fixedHtml = html.replace(
-          /src="([^"]+\.mp4)"/g,
-          (match, videoPath) => {
-            // Convert relative video paths to absolute paths
-            if (!videoPath.startsWith('http') && !videoPath.startsWith('/')) {
-              return `src="${basePath}${videoPath}"`;
-            }
-            return match;
-          }
-        ).replace(
-          /href="([^"]+\.mp4)"/g,
-          (match, videoPath) => {
-            // Convert relative video paths in href attributes too
-            if (!videoPath.startsWith('http') && !videoPath.startsWith('/') && !videoPath.includes('index.html')) {
-              return `href="${basePath}${videoPath}"`;
-            }
-            return match;
-          }
-        ).replace(
-          /<header[^>]*>[\s\S]*?<\/header>/gi,
-          ''
-        ).replace(
-          /<a[^>]*href=['"][^'"]*index\.html['"][^>]*>[\s\S]*?<\/a>/gi,
-          ''
-        );
+        const withBase = html.replace(/<head([^>]*)>/i, `<head$1><base href="${basePath}">`);
+        const fixedHtml = withBase
+          .replace(/<header[^>]*>[\s\S]*?<\/header>/gi, '')
+          .replace(/<a[^>]*href=['\"][^'\"]*index\.html['\"][^>]*>[\s\S]*?<\/a>/gi, '');
         setHtmlContent(fixedHtml);
       } else {
         setHtmlContent(`
@@ -137,6 +115,7 @@ const ContentViewer: React.FC<ContentViewerProps> = ({
             srcDoc={htmlContent}
             className="w-full h-full border-none"
             sandbox="allow-scripts allow-same-origin"
+            loading="lazy"
             title={currentContent.title}
           />
         )}

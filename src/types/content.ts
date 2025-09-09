@@ -1,7 +1,9 @@
+export type ContentType = 'introduction' | 'prompt' | 'video';
+
 export interface ContentItem {
   id: string;
   title: string;
-  type: 'introduction' | 'prompt' | 'video';
+  type: ContentType;
   filePath: string;
   section: string;
   subsection?: string;

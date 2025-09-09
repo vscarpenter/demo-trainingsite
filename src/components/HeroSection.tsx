@@ -1,4 +1,5 @@
 import React from 'react';
+import { COURSE_TITLE } from '@/lib/constants';
 
 const HeroSection: React.FC = () => {
   return (
@@ -15,7 +16,7 @@ const HeroSection: React.FC = () => {
       {/* Main content */}
       <div className="relative z-10 text-center px-8 max-w-4xl">
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-          <span className="text-blue-100">The Microsoft 365 Copilot Experience</span>
+          <span className="text-blue-100">{COURSE_TITLE}</span>
         </h1>
         
         <div className="flex items-center justify-center space-x-4 text-white/80 text-sm">
