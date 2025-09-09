@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Copilot for Word, Excel & PowerPoint — High‑Level Overview</title>
+  <style>
+    :root{
+      --ink:#0f172a; --muted:#475569; --bg:#ffffff; --edge:#e5e7eb;
+      --brand:#0ea5e9; --accent:#22c55e; --warn:#f59e0b;
+    }
+    *{box-sizing:border-box}
+    body{font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+         color:var(--ink); background:var(--bg); margin:0; padding:2rem; line-height:1.6;}
+    header h1{font-size:clamp(1.6rem,2vw+1rem,2.2rem); margin:0 0 .5rem 0;}
+    header p{margin:.25rem 0 1rem 0; color:var(--muted); max-width:75ch}
+    .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1rem; align-items:start;}
+    section.card{border:1px solid var(--edge); border-radius:14px; padding:1rem 1.1rem; background:#fff;}
+    h2{font-size:1.25rem; margin:.25rem 0 .5rem 0}
+    h3{font-size:1.05rem; margin:.8rem 0 .35rem 0; color:var(--muted)}
+    ul{margin:.2rem 0 .6rem 1.1rem; padding:0}
+    .tag{display:inline-block; padding:.15rem .45rem; font-size:.8rem; border-radius:999px; border:1px solid var(--edge); color:var(--muted);}
+    .ex{border-left:3px solid var(--brand); padding:.6rem .8rem; background:#f0f9ff; border-radius:8px; margin:.5rem 0}
+    .tips{border-left:3px solid var(--accent); padding:.6rem .8rem; background:#ecfdf5; border-radius:8px; margin:.6rem 0}
+    .notes{font-size:.92rem; color:var(--muted)}
+    footer{margin-top:1.25rem; color:var(--muted); font-size:.9rem}
+    .kbd{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:.9rem; background:#f8fafc; border:1px solid var(--edge); padding:.05rem .35rem; border-radius:6px;}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Copilot for Word, Excel &amp; PowerPoint</h1>
+    <p>
+      Microsoft 365 Copilot brings AI assistance into the Office apps you already use. Below is a concise, practical
+      overview of what Copilot does in each app, how to think about prompts, and where it shines.
+    </p>
+  </header>
+
+  <div class="grid">
+    <!-- Word -->
+    <section class="card" aria-labelledby="word">
+      <div class="tag">Word</div>
+      <h2 id="word">Copilot in Word — Draft, refine, and reformat</h2>
+      <p>Use Copilot to quickly create first drafts, rewrite for tone or length, and generate outlines and summaries from your files.</p>
+      <h3>Great for</h3>
+      <ul>
+        <li>Turning bullet notes into a structured document (memos, SOPs, briefs)</li>
+        <li>Rewriting for tone: concise, executive, persuasive, or plain language</li>
+        <li>Summarizing long docs and extracting action items</li>
+        <li>Creating templates and filling in missing sections</li>
+      </ul>
+      <div class="ex">
+        <strong>Example prompt</strong>: “Draft a one‑page executive summary of the attached project brief. 
+        Keep it under 250 words, plain language, and include 3 bullets of key risks.”
+      </div>
+      <div class="tips">
+        <strong>Tips</strong>: Mention audience and length; attach/source the reference document; ask for a list of assumptions so you can correct it.
+      </div>
+    </section>
+
+    <!-- Excel -->
+    <section class="card" aria-labelledby="excel">
+      <div class="tag">Excel</div>
+      <h2 id="excel">Copilot in Excel — Explore, explain, and simulate</h2>
+      <p>Copilot helps you analyze tables, spot trends, create scenarios, and describe what formulas or pivots are doing in plain English.</p>
+      <h3>Great for</h3>
+      <ul>
+        <li>Explaining variances and trends across time or categories</li>
+        <li>Building what‑if scenarios and quick sensitivity tables</li>
+        <li>Creating drafts of pivot tables and charts</li>
+        <li>Describing formulas and cleaning data (identify duplicates, missing values)</li>
+      </ul>
+      <div class="ex">
+        <strong>Example prompt</strong>: “Analyze revenue by region for the last 6 quarters. 
+        Create a summary with drivers of growth and a simple chart. Flag any outliers.”
+      </div>
+      <div class="tips">
+        <strong>Tips</strong>: Name your tables; describe the goal and timeframe; ask Copilot to explain results step‑by‑step so you can audit them.
+      </div>
+    </section>
+
+    <!-- PowerPoint -->
+    <section class="card" aria-labelledby="ppt">
+      <div class="tag">PowerPoint</div>
+      <h2 id="ppt">Copilot in PowerPoint — Build and polish slides</h2>
+      <p>Start from a document or outline and let Copilot produce a themed deck; then iterate on visuals, speaker notes, and time‑boxed edits.</p>
+      <h3>Great for</h3>
+      <ul>
+        <li>Generating a first‑cut deck from a Word doc or meeting notes</li>
+        <li>Refining layouts, speaker notes, and slide titles</li>
+        <li>Creating alternative versions for different audiences</li>
+        <li>Producing a quick 3–5 slide summary for briefings</li>
+      </ul>
+      <div class="ex">
+        <strong>Example prompt</strong>: “Create 6 slides from this Word doc for an executive audience. 
+        Use a simple style, add concise speaker notes, and end with 3 decision options.”
+      </div>
+      <div class="tips">
+        <strong>Tips</strong>: Specify slide count and audience; request “one idea per slide”; ask for alternative layouts or a summary deck.
+      </div>
+    </section>
+  </div>
+
+  <section class="card" style="margin-top:1rem">
+    <h2>Prompting Basics</h2>
+    <ul>
+      <li><strong>Context</strong>: Provide source files or paste key text. Name the audience and goal.</li>
+      <li><strong>Constraints</strong>: Specify length, tone, formats (e.g., bullets, table, slide count).</li>
+      <li><strong>Critique</strong>: Ask Copilot to list assumptions and open questions; iterate with <span class="kbd">Refine</span>.</li>
+    </ul>
+    <p class="notes">Remember to review outputs for accuracy, compliance, and organization‑specific terminology before sharing.</p>
+  </section>
+
+  <footer>
+    High‑level overview prepared for quick onboarding to Copilot in Word, Excel, and PowerPoint.
+  </footer>
+</body>
+</html>

@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Copilot Prompting — Tips & Tricks</title>
+<style>
+  :root{
+    --ink:#0f172a; --muted:#475569; --bg:#ffffff; --edge:#e5e7eb;
+    --brand:#0ea5e9; --accent:#22c55e; --ok:#10b981; --warn:#f59e0b;
+    --rose:#ef4444; --violet:#7c3aed;
+  }
+  *{box-sizing:border-box}
+  html, body { height:100%; }
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    line-height:1.6;
+    scroll-snap-type: y mandatory;
+    overflow-y: scroll;
+  }
+  .section{
+    min-height:100vh; padding: clamp(1rem, 3vw, 2rem) clamp(1rem, 5vw, 3rem);
+    display:grid; grid-template-rows: auto 1fr auto;
+    gap:1rem; border-bottom:1px solid var(--edge);
+    scroll-snap-align:start; scroll-padding-top:0;
+  }
+  .title{ font-size:clamp(1.6rem, 2vw + 1rem, 2.2rem); margin:.2rem 0; }
+  .kicker{ color:var(--muted); text-transform:uppercase; letter-spacing:.08em; font-weight:600; }
+  .content{ display:grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap:1rem; align-items:start;}
+  h3{ font-size:1.15rem; margin:.25rem 0 .4rem 0; color:#0b5a75 }
+  ul{ margin:.2rem 0 .6rem 1.1rem; }
+  .card{
+    border:1px solid var(--edge); border-radius:14px; padding:1rem 1.1rem; background:#fff;
+    box-shadow: 0 1px 0 rgba(0,0,0,.02);
+  }
+  .badge{ display:inline-block; padding:.25rem .55rem; border-radius:999px; font-size:.8rem; border:1px solid var(--edge); color:var(--muted); }
+  .ex{ border-left:3px solid var(--brand); padding:.6rem .8rem; background:#f0f9ff; border-radius:8px; margin:.4rem 0; }
+  .tip{ border-left:3px solid var(--ok); padding:.6rem .8rem; background:#ecfdf5; border-radius:8px; margin:.4rem 0; }
+  .warn{ border-left:3px solid var(--warn); padding:.6rem .8rem; background:#fffbeb; border-radius:8px; margin:.4rem 0; }
+  .anti{ border-left:3px solid var(--rose); padding:.6rem .8rem; background:#fef2f2; border-radius:8px; margin:.4rem 0; }
+  .grid-2{ display:grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap:.9rem; }
+  .grid-3{ display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:.9rem; }
+  .footer{ color:var(--muted); font-size:.9rem }
+  nav{
+    position:fixed; top:.6rem; right:.6rem; z-index:10;
+    background:rgba(255,255,255,.9); backdrop-filter: blur(6px);
+    border:1px solid var(--edge); border-radius:12px; padding:.5rem .6rem;
+  }
+  nav a{ display:inline-block; margin:.1rem .25rem; padding:.2rem .5rem; text-decoration:none; color:#075985; border-radius:8px; }
+  nav a:hover{ background:#e0f2fe; }
+  .progress{
+    position:fixed; left:0; top:0; height:4px; background:linear-gradient(90deg, var(--brand), var(--violet));
+    width:0; z-index:20;
+  }
+  code, .kbd{
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    background:#f8fafc; border:1px solid var(--edge); padding:.05rem .35rem; border-radius:6px;
+  }
+  .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .center{ align-self:center }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<nav>
+  <a href="#principles">Principles</a>
+  <a href="#structure">Prompt Structure</a>
+  <a href="#patterns">Patterns</a>
+  <a href="#refine">Refine</a>
+  <a href="#guardrails">Guardrails</a>
+  <a href="#evaluate">Evaluate</a>
+  <a href="#antipatterns">Anti‑patterns</a>
+  <a href="#examples">Examples</a>
+  <a href="#shortcuts">Shortcuts</a>
+</nav>
+
+<section class="section" id="principles">
+  <div>
+    <div class="kicker">Copilot prompting tips &amp; tricks</div>
+    <h2 class="title">Principles that make prompts work</h2>
+  </div>
+  <div class="content">
+    <div class="card">
+      <h3>1) Purpose over prose</h3>
+      <p>State the <strong>goal</strong> first. Copilot performs best when it knows the outcome you want, not just the topic.</p>
+      <div class="ex"><strong>Try:</strong> “Create a one‑page executive brief that explains <em>why</em> this matters and <em>what</em> to decide.”</div>
+    </div>
+    <div class="card">
+      <h3>2) Context is king</h3>
+      <p>Reference specific files, tables, or pages. Copilot can’t infer what you didn’t provide.</p>
+      <div class="tip">Attach or cite the source. “Use the <span class="mono">Q2_Finance.xlsx</span> sheet ‘Bookings’.”</div>
+    </div>
+    <div class="card">
+      <h3>3) Constraints guide quality</h3>
+      <p>Boundaries like length, tone, structure, or audience keep outputs on target.</p>
+      <div class="ex">“Limit to 200 words, plain language, with 3 bullets for risks.”</div>
+    </div>
+    <div class="card">
+      <h3>4) Iterate like a teammate</h3>
+      <p>Ask for assumptions, request alternatives, and refine quickly rather than trying for a perfect first prompt.</p>
+      <div class="tip">Follow with: “List assumptions you made. What’s missing?”</div>
+    </div>
+  </div>
+  <div class="footer">Scroll for structure →</div>
+</section>
+
+<section class="section" id="structure">
+  <div>
+    <div class="kicker">Reusable anatomy</div>
+    <h2 class="title">A reliable prompt structure</h2>
+  </div>
+  <div class="content grid-2">
+    <div class="card">
+      <h3>G • Goal</h3>
+      <ul>
+        <li>What do you want? (summary, draft, plan, analysis, slides)</li>
+        <li>Who is it for? (audience &amp; reading level)</li>
+      </ul>
+      <div class="ex">“Draft a 1‑page policy summary for non‑technical leaders.”</div>
+    </div>
+    <div class="card">
+      <h3>C • Context</h3>
+      <ul>
+        <li>Point to sources (files, tables, pages, chat)</li>
+        <li>Call out sections to focus on</li>
+      </ul>
+      <div class="ex">“Use the ‘Controls’ section from the SOP + today’s notes.”</div>
+    </div>
+    <div class="card">
+      <h3>K • Constraints</h3>
+      <ul>
+        <li>Length, format, tone, due date</li>
+        <li>In/Out of scope</li>
+      </ul>
+      <div class="ex">“≤ 5 bullets, assertive tone, include owners &amp; due dates.”</div>
+    </div>
+    <div class="card">
+      <h3>S • Style</h3>
+      <ul>
+        <li>Examples or reference style guides</li>
+        <li>Voice: executive, friendly, analytical</li>
+      </ul>
+      <div class="ex">“Write like the <em>Azure Well‑Architected</em> guidance.”</div>
+    </div>
+    <div class="card">
+      <h3>SRC • Sources</h3>
+      <ul>
+        <li>List what to rely on (and what not to)</li>
+        <li>Ask for citations or links back</li>
+      </ul>
+      <div class="tip">“Cite page titles with links back to SharePoint.”</div>
+    </div>
+    <div class="card">
+      <h3>OUT • Output</h3>
+      <ul>
+        <li>Exact deliverable (table, deck, email, checklist)</li>
+        <li>File format or slide count if needed</li>
+      </ul>
+      <div class="ex">“Produce 6 slides with speaker notes and a decision slide.”</div>
+    </div>
+  </div>
+  <div class="footer">Patterns by app →</div>
+</section>
+
+<section class="section" id="patterns">
+  <div>
+    <div class="kicker">Quick starts</div>
+    <h2 class="title">Common patterns by app</h2>
+  </div>
+  <div class="content grid-3">
+    <div class="card">
+      <h3>Word — Draft &amp; refine</h3>
+      <ul>
+        <li>Turn bullets into a memo with headings</li>
+        <li>Rewrite for tone/length</li>
+        <li>Extract actions and risks</li>
+      </ul>
+      <div class="ex">“Draft a 1‑page memo from these bullets, plain language, end with ‘Next steps’.”</div>
+    </div>
+    <div class="card">
+      <h3>Excel — Explain &amp; analyze</h3>
+      <ul>
+        <li>Explain drivers and anomalies</li>
+        <li>Build simple scenarios</li>
+        <li>Create pivots and charts</li>
+      </ul>
+      <div class="ex">“Analyze bookings by region (6 quarters). Summarize drivers and flag outliers.”</div>
+    </div>
+    <div class="card">
+      <h3>PowerPoint — Build slides</h3>
+      <ul>
+        <li>Create deck from a doc</li>
+        <li>Polish titles &amp; speaker notes</li>
+        <li>Version for different audiences</li>
+      </ul>
+      <div class="ex">“Create 7 slides from this Word doc, exec audience, one idea/slide.”</div>
+    </div>
+    <div class="card">
+      <h3>Outlook — Triage &amp; reply</h3>
+      <ul>
+        <li>Summarize threads</li>
+        <li>Draft replies with owners/dates</li>
+        <li>Turn mail into tasks/events</li>
+      </ul>
+      <div class="ex">“Summarize this thread in 5 bullets and draft my reply confirming next steps.”</div>
+    </div>
+    <div class="card">
+      <h3>Teams — Meetings &amp; chat</h3>
+      <ul>
+        <li>Real‑time meeting notes</li>
+        <li>Channel catch‑ups</li>
+        <li>Answer “what did we decide?”</li>
+      </ul>
+      <div class="ex">“Create a meeting recap with decisions, owners, and open issues.”</div>
+    </div>
+    <div class="card">
+      <h3>SharePoint — Pages &amp; updates</h3>
+      <ul>
+        <li>Draft pages from files</li>
+        <li>Summarize SOPs &amp; policies</li>
+        <li>Propose updates</li>
+      </ul>
+      <div class="ex">“Draft a landing page summarizing this SOP for frontline staff.”</div>
+    </div>
+    <div class="card">
+      <h3>OneNote — Organize &amp; summarize</h3>
+      <ul>
+        <li>Summarize pages to actions</li>
+        <li>Restructure brainstorms</li>
+        <li>Create agendas &amp; checklists</li>
+      </ul>
+      <div class="ex">“From this page, produce a recap with owners and due dates.”</div>
+    </div>
+  </div>
+  <div class="footer">Refining techniques →</div>
+</section>
+
+<section class="section" id="refine">
+  <div>
+    <div class="kicker">From rough to right</div>
+    <h2 class="title">Refining techniques</h2>
+  </div>
+  <div class="content grid-2">
+    <div class="card">
+      <h3>Assumption check</h3>
+      <div class="ex">“List the assumptions you used and questions you still have.”</div>
+      <div class="tip">Quickly correct facts and point to the right sources.</div>
+    </div>
+    <div class="card">
+      <h3>Contrastive edits</h3>
+      <div class="ex">“Give me a shorter version (&lt;120 words) and a detailed version (300–400).”</div>
+    </div>
+    <div class="card">
+      <h3>Style swap</h3>
+      <div class="ex">“Rewrite for an executive audience, then for frontline staff.”</div>
+    </div>
+    <div class="card">
+      <h3>Structure switch</h3>
+      <div class="ex">“Convert this into a table with columns: Owner, Task, Date, Risk.”</div>
+    </div>
+    <div class="card">
+      <h3>Traceability</h3>
+      <div class="ex">“Cite sources with links to SharePoint pages and file names.”</div>
+    </div>
+    <div class="card">
+      <h3>Time box</h3>
+      <div class="ex">“Produce a 5‑slide version that I can present in 3 minutes.”</div>
+    </div>
+  </div>
+  <div class="footer">Guardrails →</div>
+</section>
+
+<section class="section" id="guardrails">
+  <div>
+    <div class="kicker">Accuracy &amp; safety</div>
+    <h2 class="title">Guardrails to include in prompts</h2>
+  </div>
+  <div class="content grid-2">
+    <div class="card">
+      <h3>Scope &amp; sources</h3>
+      <ul>
+        <li>“Use only the attached files and current page.”</li>
+        <li>“Do not invent data; say ‘not found’ if missing.”</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Compliance notes</h3>
+      <ul>
+        <li>“Avoid PII. Redact examples as needed.”</li>
+        <li>“Flag any content that appears export‑controlled.”</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Quality checks</h3>
+      <ul>
+        <li>“Provide a checklist of risks and assumptions.”</li>
+        <li>“Highlight contradictions between sources.”</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Review before send</h3>
+      <ul>
+        <li>“Produce a final version and a separate ‘review notes’ section.”</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer">Evaluate outputs →</div>
+</section>
+
+<section class="section" id="evaluate">
+  <div>
+    <div class="kicker">Quality bar</div>
+    <h2 class="title">Evaluate results with a quick rubric</h2>
+  </div>
+  <div class="content grid-3">
+    <div class="card">
+      <h3>Accuracy</h3>
+      <ul>
+        <li>Facts match sources; citations present</li>
+        <li>Numbers add up; no contradictions</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Relevance</h3>
+      <ul>
+        <li>On goal, on audience, scoped to task</li>
+        <li>Unnecessary sections removed</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Clarity</h3>
+      <ul>
+        <li>Plain language; skimmable structure</li>
+        <li>Actionable next steps &amp; owners</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer">Avoid these patterns →</div>
+</section>
+
+<section class="section" id="antipatterns">
+  <div>
+    <div class="kicker">What to avoid</div>
+    <h2 class="title">Prompt anti‑patterns</h2>
+  </div>
+  <div class="content grid-2">
+    <div class="card anti">
+      <h3>Vague asks</h3>
+      <p>“Do something with this.” → Specify goal, audience, and format.</p>
+    </div>
+    <div class="card anti">
+      <h3>Source‑less tasks</h3>
+      <p>Expecting specific answers without providing documents, tables, or context.</p>
+    </div>
+    <div class="card anti">
+      <h3>Overlong prompts</h3>
+      <p>Walls of text hide the goal. Use headings and bullets instead.</p>
+    </div>
+    <div class="card anti">
+      <h3>One‑shot perfection</h3>
+      <p>No iteration. Ask for assumptions, then refine.</p>
+    </div>
+  </div>
+  <div class="footer">Real prompt examples →</div>
+</section>
+
+<section class="section" id="examples">
+  <div>
+    <div class="kicker">Copy &amp; adapt</div>
+    <h2 class="title">Prompt examples</h2>
+  </div>
+  <div class="content grid-3">
+    <div class="card">
+      <h3>Executive summary (Word)</h3>
+      <div class="ex">“From the attached brief, write a 200‑word executive summary with 3 risks and 3 decisions needed. Plain language.”</div>
+    </div>
+    <div class="card">
+      <h3>Variance analysis (Excel)</h3>
+      <div class="ex">“Explain the variance in Operating Expense by department for FY24 Q1–Q4. Provide 5 bullets and a small table of top drivers.”</div>
+    </div>
+    <div class="card">
+      <h3>Deck from doc (PowerPoint)</h3>
+      <div class="ex">“Create 8 slides from this Word doc for senior leadership; include speaker notes and a final decision slide.”</div>
+    </div>
+    <div class="card">
+      <h3>Thread catch‑up (Outlook)</h3>
+      <div class="ex">“Summarize this email thread in 5 bullets with owners/dates and draft my reply confirming next actions.”</div>
+    </div>
+    <div class="card">
+      <h3>Meeting recap (Teams)</h3>
+      <div class="ex">“Create a meeting recap with decisions, open issues, and next steps assigned to owners with dates. Share to the channel.”</div>
+    </div>
+    <div class="card">
+      <h3>Policy page (SharePoint)</h3>
+      <div class="ex">“Draft a SharePoint page from this policy with sections: Overview, Who’s affected, Key changes, Actions required.”</div>
+    </div>
+  </div>
+  <div class="footer">Handy shortcuts →</div>
+</section>
+
+<section class="section" id="shortcuts">
+  <div>
+    <div class="kicker">Speed boosts</div>
+    <h2 class="title">Shortcuts &amp; phrasing</h2>
+  </div>
+  <div class="content grid-2">
+    <div class="card">
+      <h3>Useful stems</h3>
+      <ul>
+        <li>“Using &lt;file/page&gt;, <strong>draft</strong> … for &lt;audience&gt;.”</li>
+        <li>“<strong>Summarize</strong> with &lt;N&gt; bullets and owners/dates.”</li>
+        <li>“<strong>Rewrite</strong> in &lt;tone&gt; and keep under &lt;length&gt;.”</li>
+        <li>“<strong>Convert</strong> to a table with columns …”</li>
+        <li>“<strong>List assumptions</strong> and missing information.”</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Time savers</h3>
+      <ul>
+        <li>Specify <strong>audience + length</strong> every time</li>
+        <li>Ask for <strong>two versions</strong> (short &amp; detailed)</li>
+        <li>Request a <strong>checklist</strong> at the end</li>
+        <li>Bookmark a <strong>starter prompt</strong> per app</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer">End</div>
+</section>
+
+<script>
+  // Progress bar
+  const progress = document.getElementById('progress');
+  const update = () => {
+    const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const pct = Math.max(0, Math.min(1, scrollTop / (height || 1)));
+    progress.style.width = (pct * 100) + '%';
+  };
+  document.addEventListener('scroll', update, { passive: true });
+  update();
+</script>
+</body>
+</html>
