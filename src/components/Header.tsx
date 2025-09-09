@@ -1,7 +1,7 @@
 import React from 'react';
-import { Search, HelpCircle, Settings, User, X, ChevronRight, Menu } from 'lucide-react';
+import { Search, HelpCircle, Settings, User, X, Menu } from 'lucide-react';
 import { Button } from './ui/button';
-import { SITE_NAME, COURSE_TITLE } from '@/lib/constants';
+import { COURSE_TITLE } from '@/lib/constants';
 
 interface HeaderProps {
   onToggleSidebar?: () => void;
@@ -35,20 +35,10 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, isSidebarOpen }) => {
           <span className="text-sm font-medium text-gray-700">Microsoft</span>
         </div>
 
-        {/* Breadcrumb Navigation */}
-        <nav className="ml-8 text-sm text-gray-600" aria-label="Breadcrumb">
-          <ol className="flex items-center">
-            <li>
-              <span className="hover:text-ms-blue cursor-pointer text-base">{SITE_NAME}</span>
-            </li>
-            <li aria-hidden="true" className="px-2">
-              <ChevronRight className="h-4 w-4 text-gray-400" />
-            </li>
-            <li aria-current="page">
-              <span className="text-gray-900 font-medium text-base">{COURSE_TITLE}</span>
-            </li>
-          </ol>
-        </nav>
+        {/* Header Title */}
+        <div className="ml-8 text-sm text-gray-600" aria-label="Page title">
+          <span className="text-gray-900 font-medium text-base">{COURSE_TITLE}</span>
+        </div>
       </div>
 
       {/* Right Side Controls */}

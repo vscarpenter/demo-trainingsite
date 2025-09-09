@@ -48,7 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentContentId, onContentSelect }) 
   const percent = Math.round(((navState.currentIndex + 1) / navState.totalItems) * 100);
 
   return (
-    <aside className="w-80 bg-white sidebar-shadow flex flex-col h-full">
+    <aside className="w-80 bg-white sidebar-shadow flex flex-col h-full border-r border-gray-400">
       {/* Sidebar Header removed per request */}
 
       {/* Navigation Tabs */}
@@ -108,7 +108,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentContentId, onContentSelect }) 
             hidden={activeTab !== 'TRANSCRIPT'}
             className="text-sm text-gray-600"
           >
-            <p>Transcript content will be displayed here...</p>
+            <p>Coming Soon</p>
           </section>
 
           <section
@@ -118,7 +118,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentContentId, onContentSelect }) 
             hidden={activeTab !== 'RESOURCES'}
             className="text-sm text-gray-600"
           >
-            <p>Course resources and materials will be displayed here...</p>
+            <p>Coming Soon</p>
           </section>
         </div>
       </div>
