@@ -2,24 +2,31 @@
 import { useEffect, useState } from 'react';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
+import SearchDialog from './components/SearchDialog';
+import HelpDialog from './components/HelpDialog';
 import { Suspense, lazy } from 'react';
 import './styles/globals.css';
 import { allContentItems } from './data/contentStructure';
 
 function App() {
-  const [currentContentId, setCurrentContentId] = useState<string>('');
+  const [currentContentId, setCurrentContentId] = useState<string>(() => {
+    try {
+      const url = new URL(window.location.href);
+      const fromQuery = url.searchParams.get('id') || '';
+      const fromHash = !fromQuery && url.hash ? url.hash.replace(/^#/, '') : '';
+      const fromStorage = localStorage.getItem('currentContentId') || '';
+      const fallback = allContentItems[0]?.id || '';
+      return fromQuery || fromHash || fromStorage || fallback;
+    } catch {
+      return '';
+    }
+  });
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+  const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
+  const [isHelpOpen, setIsHelpOpen] = useState<boolean>(false);
 
-  // Deep link + localStorage initialization
+  // Listen for history changes to update currentContentId
   useEffect(() => {
-    const url = new URL(window.location.href);
-    const fromQuery = url.searchParams.get('id') || '';
-    const fromHash = !fromQuery && url.hash ? url.hash.replace(/^#/, '') : '';
-    const fromStorage = localStorage.getItem('currentContentId') || '';
-    const fallback = allContentItems[0]?.id || '';
-    const initial = fromQuery || fromHash || fromStorage || fallback;
-    if (initial) setCurrentContentId(initial);
-
     const onPopState = () => {
       const u = new URL(window.location.href);
       const id = u.searchParams.get('id') || (u.hash ? u.hash.replace(/^#/, '') : '');
@@ -39,19 +46,39 @@ function App() {
     } catch {}
   };
 
-  // Close sidebar on Escape (mobile)
+  // Handle global keyboard shortcuts
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setIsSidebarOpen(false);
+      // Escape key handling
+      if (e.key === 'Escape') {
+        if (isSearchOpen) {
+          setIsSearchOpen(false);
+        } else if (isHelpOpen) {
+          setIsHelpOpen(false);
+        } else {
+          setIsSidebarOpen(false);
+        }
+      }
+      
+      // Ctrl+K for search
+      if (e.ctrlKey && e.key === 'k') {
+        e.preventDefault();
+        setIsSearchOpen(true);
+      }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, []);
+  }, [isSearchOpen, isHelpOpen]);
 
   return (
     <div className="h-screen flex flex-col bg-gray-50 font-geist">
       {/* Top Header */}
-      <Header onToggleSidebar={() => setIsSidebarOpen(s => !s)} isSidebarOpen={isSidebarOpen} />
+      <Header 
+        onToggleSidebar={() => setIsSidebarOpen(s => !s)} 
+        isSidebarOpen={isSidebarOpen}
+        onOpenSearch={() => setIsSearchOpen(true)}
+        onOpenHelp={() => setIsHelpOpen(true)}
+      />
       
       {/* Main Content Area */}
       <div className="flex-1 flex overflow-hidden">
@@ -92,6 +119,20 @@ function App() {
           </Suspense>
         </main>
       </div>
+
+      {/* Search Dialog */}
+      <SearchDialog
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+        contentItems={allContentItems}
+        onSelectContent={handleContentChange}
+      />
+
+      {/* Help Dialog */}
+      <HelpDialog
+        isOpen={isHelpOpen}
+        onClose={() => setIsHelpOpen(false)}
+      />
     </div>
   );
 }
