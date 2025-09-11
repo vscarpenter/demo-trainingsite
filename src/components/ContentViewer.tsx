@@ -8,6 +8,9 @@ interface ContentViewerProps {
   onContentChange?: (contentId: string) => void;
 }
 
+// Simple in-memory cache of fetched HTML by filePath
+const htmlCache = new Map<string, string>();
+
 const ContentViewer: React.FC<ContentViewerProps> = ({ 
   currentContentId, 
   onContentChange 
@@ -31,8 +34,13 @@ const ContentViewer: React.FC<ContentViewerProps> = ({
   const loadContent = async (content: ContentItem) => {
     setLoading(true);
     try {
-      // Since we're in a React app, we need to load the HTML content
-      // For now, we'll create a placeholder that will load the actual HTML
+      // Serve from cache if present
+      if (htmlCache.has(content.filePath)) {
+        setHtmlContent(htmlCache.get(content.filePath) || '');
+        setLoading(false);
+        return;
+      }
+
       const response = await fetch(content.filePath);
       if (response.ok) {
         const html = await response.text();
@@ -41,6 +49,7 @@ const ContentViewer: React.FC<ContentViewerProps> = ({
         const fixedHtml = withBase
           .replace(/<header[^>]*>[\s\S]*?<\/header>/gi, '')
           .replace(/<a[^>]*href=['\"][^'\"]*index\.html['\"][^>]*>[\s\S]*?<\/a>/gi, '');
+        htmlCache.set(content.filePath, fixedHtml);
         setHtmlContent(fixedHtml);
       } else {
         setHtmlContent(`
@@ -68,6 +77,42 @@ const ContentViewer: React.FC<ContentViewerProps> = ({
     }
     setLoading(false);
   };
+
+  // Prefetch helper for adjacent items
+  const prefetchFile = async (filePath: string) => {
+    if (!filePath || htmlCache.has(filePath)) return;
+    // Avoid prefetch if user enabled Data Saver
+    // @ts-ignore
+    if (navigator?.connection?.saveData) return;
+    try {
+      const res = await fetch(filePath);
+      if (res.ok) {
+        const html = await res.text();
+        const basePath = filePath.substring(0, filePath.lastIndexOf('/') + 1);
+        const withBase = html.replace(/<head([^>]*)>/i, `<head$1><base href="${basePath}">`);
+        const fixedHtml = withBase
+          .replace(/<header[^>]*>[\s\S]*?<\/header>/gi, '')
+          .replace(/<a[^>]*href=['\"][^'\"]*index\.html['\"][^>]*>[\s\S]*?<\/a>/gi, '');
+        htmlCache.set(filePath, fixedHtml);
+      }
+    } catch {}
+  };
+
+  // When current item changes, prefetch next and (idle) previous
+  useEffect(() => {
+    if (!currentContent) return;
+    const next = getNextItem(currentContent.id);
+    const prev = getPreviousItem(currentContent.id);
+    if (next) prefetchFile(next.filePath);
+    if (prev) {
+      if ('requestIdleCallback' in window) {
+        // @ts-ignore
+        requestIdleCallback(() => prefetchFile(prev.filePath));
+      } else {
+        setTimeout(() => prefetchFile(prev.filePath), 500);
+      }
+    }
+  }, [currentContent?.id]);
 
   const handleNext = () => {
     if (!currentContent) return;

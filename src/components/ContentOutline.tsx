@@ -273,4 +273,4 @@ const ContentOutline: React.FC<ContentOutlineProps> = ({
   );
 };
 
-export default ContentOutline;
+export default React.memo(ContentOutline);

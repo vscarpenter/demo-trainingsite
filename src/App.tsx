@@ -2,8 +2,6 @@
 import { useEffect, useState } from 'react';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
-import SearchDialog from './components/SearchDialog';
-import HelpDialog from './components/HelpDialog';
 import { Suspense, lazy } from 'react';
 import './styles/globals.css';
 import { allContentItems } from './data/contentStructure';
@@ -121,21 +119,31 @@ function App() {
       </div>
 
       {/* Search Dialog */}
-      <SearchDialog
-        isOpen={isSearchOpen}
-        onClose={() => setIsSearchOpen(false)}
-        contentItems={allContentItems}
-        onSelectContent={handleContentChange}
-      />
+      {isSearchOpen && (
+        <Suspense fallback={null}>
+          <SearchDialog
+            isOpen={isSearchOpen}
+            onClose={() => setIsSearchOpen(false)}
+            contentItems={allContentItems}
+            onSelectContent={handleContentChange}
+          />
+        </Suspense>
+      )}
 
       {/* Help Dialog */}
-      <HelpDialog
-        isOpen={isHelpOpen}
-        onClose={() => setIsHelpOpen(false)}
-      />
+      {isHelpOpen && (
+        <Suspense fallback={null}>
+          <HelpDialog
+            isOpen={isHelpOpen}
+            onClose={() => setIsHelpOpen(false)}
+          />
+        </Suspense>
+      )}
     </div>
   );
 }
 const ContentViewer = lazy(() => import('./components/ContentViewer'));
+const SearchDialog = lazy(() => import('./components/SearchDialog'));
+const HelpDialog = lazy(() => import('./components/HelpDialog'));
 
 export default App;
