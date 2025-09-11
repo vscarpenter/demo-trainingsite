@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 // Auto-generate src/data/contentStructure.ts from files under public/
 // Scans sections, introductions, and slide pairs (prompt + video)
+// Enhanced with validation, error checking, and content optimization
 
 import { promises as fs } from 'fs';
 import path from 'path';
+import { createHash } from 'crypto';
 
 const repoRoot = process.cwd();
 const publicDir = path.join(repoRoot, 'public');
@@ -159,20 +161,100 @@ const buildItemsForSection = async (sectionFolder) => {
   };
 };
 
+// Validation and error tracking
+const validationErrors = [];
+const validationWarnings = [];
+
+const validateContentFile = async (filePath) => {
+  const fullPath = path.join(publicDir, filePath.replace(/^\//, ''));
+  try {
+    const stats = await fs.stat(fullPath);
+    if (!stats.isFile()) {
+      validationErrors.push(`Referenced path is not a file: ${filePath}`);
+      return false;
+    }
+    
+    // Check file size (warn if > 5MB)
+    if (stats.size > 5 * 1024 * 1024) {
+      validationWarnings.push(`Large file detected (${Math.round(stats.size / 1024 / 1024)}MB): ${filePath}`);
+    }
+    
+    // Validate HTML files have basic structure
+    if (filePath.endsWith('.html')) {
+      const content = await fs.readFile(fullPath, 'utf8');
+      if (!content.includes('<html') && !content.includes('<HTML')) {
+        validationWarnings.push(`HTML file may be malformed (no <html> tag): ${filePath}`);
+      }
+    }
+    
+    return true;
+  } catch (error) {
+    validationErrors.push(`File not found or inaccessible: ${filePath} (${error.message})`);
+    return false;
+  }
+};
+
+const generateContentHash = (sections) => {
+  const contentString = JSON.stringify(sections, null, 2);
+  return createHash('sha256').update(contentString).digest('hex').substring(0, 8);
+};
+
+const optimizeContent = (content) => {
+  // Remove excessive whitespace and normalize line endings
+  return content
+    .replace(/\r\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+};
+
 const generate = async () => {
+  console.log('🚀 Starting content generation with validation...');
+  
   if (!(await isDir(publicDir))) {
-    console.error('Public directory not found:', publicDir);
+    console.error('❌ Public directory not found:', publicDir);
     process.exit(1);
   }
 
   const sectionDirs = await readSectionDirs();
+  console.log(`📁 Found ${sectionDirs.length} sections: ${sectionDirs.join(', ')}`);
+  
   const sections = [];
+  let totalItems = 0;
+  
   for (const sd of sectionDirs) {
-    sections.push(await buildItemsForSection(sd));
+    console.log(`📝 Processing section: ${sd}`);
+    const section = await buildItemsForSection(sd);
+    sections.push(section);
+    totalItems += section.items.length;
+    
+    // Validate all file paths in this section
+    for (const item of section.items) {
+      await validateContentFile(item.filePath);
+    }
   }
 
-  // Assemble TypeScript output
-  const header = `import { ContentItem, ContentSection } from '../types/content';\n\n`;
+  // Report validation results
+  if (validationErrors.length > 0) {
+    console.error('\n❌ Validation Errors:');
+    validationErrors.forEach(error => console.error(`  • ${error}`));
+    process.exit(1);
+  }
+  
+  if (validationWarnings.length > 0) {
+    console.warn('\n⚠️  Validation Warnings:');
+    validationWarnings.forEach(warning => console.warn(`  • ${warning}`));
+  }
+
+  // Generate content hash for versioning
+  const contentHash = generateContentHash(sections);
+  console.log(`🔍 Content hash: ${contentHash}`);
+
+  // Assemble TypeScript output with metadata
+  const header = `import { ContentItem, ContentSection } from '../types/content';\n\n` +
+    `// Generated on ${new Date().toISOString()}\n` +
+    `// Content hash: ${contentHash}\n` +
+    `// Total sections: ${sections.length}, Total items: ${totalItems}\n\n`;
+    
   const sectionsJson = JSON.stringify(sections, null, 2)
     .replace(/"type":\s*"(introduction|prompt|video)"/g, (m) => m) // keep as strings
     .replace(/"([a-zA-Z_]+)":/g, '$1:') // unquote keys for TS aesthetics
@@ -180,7 +262,15 @@ const generate = async () => {
 
   const body = `export const contentSections: ContentSection[] = ${sectionsJson};\n\n`;
 
-  const helpers = `// Flatten all content items into a single array for navigation\n` +
+  const helpers = `// Content metadata\n` +
+    `export const contentMetadata = {\n` +
+    `  generatedAt: '${new Date().toISOString()}',\n` +
+    `  contentHash: '${contentHash}',\n` +
+    `  totalSections: ${sections.length},\n` +
+    `  totalItems: ${totalItems},\n` +
+    `  version: '1.0.0'\n` +
+    `};\n\n` +
+    `// Flatten all content items into a single array for navigation\n` +
     `export const allContentItems: ContentItem[] = contentSections\n` +
     `  .flatMap(section => section.items)\n` +
     `  .sort((a, b) => {\n` +
@@ -209,11 +299,28 @@ const generate = async () => {
     `  return currentIndex > 0 ? allContentItems[currentIndex - 1] : null;\n` +
     `};\n`;
 
-  const fileContent = header + body + helpers;
+  const fileContent = optimizeContent(header + body + helpers);
 
   await fs.mkdir(path.dirname(outFile), { recursive: true });
   await fs.writeFile(outFile, fileContent, 'utf8');
-  console.log(`Generated ${path.relative(repoRoot, outFile)} with ${sections.length} sections.`);
+  
+  console.log(`✅ Generated ${path.relative(repoRoot, outFile)}`);
+  console.log(`📊 Summary: ${sections.length} sections, ${totalItems} items`);
+  
+  // Generate content manifest for build optimization
+  const manifest = {
+    generatedAt: new Date().toISOString(),
+    contentHash,
+    sections: sections.length,
+    items: totalItems,
+    files: sections.flatMap(s => s.items.map(i => i.filePath))
+  };
+  
+  // Save manifest to src for inclusion in build
+  const manifestPath = path.join(repoRoot, 'src', 'data', 'content-manifest.json');
+  await fs.mkdir(path.dirname(manifestPath), { recursive: true });
+  await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2), 'utf8');
+  console.log(`📋 Generated content manifest: ${path.relative(repoRoot, manifestPath)}`);
 };
 
 generate().catch((err) => {

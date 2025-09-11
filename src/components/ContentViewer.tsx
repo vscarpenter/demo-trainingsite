@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+// Icons retained minimal; chevrons no longer used
 import { ContentItem } from '../types/content';
 import { allContentItems, getNavigationState, getNextItem, getPreviousItem } from '../data/contentStructure';
 
@@ -166,66 +166,37 @@ const ContentViewer: React.FC<ContentViewerProps> = ({
         )}
       </div>
 
-      {/* Navigation Controls */}
-      <div className="bg-gray-50 border-t border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
-          {/* Previous Button */}
-          <button
-            onClick={handlePrevious}
-            disabled={!navState.canGoPrevious}
-            className={`
-              flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all
-              ${navState.canGoPrevious
-                ? 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800'
-                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-              }
-            `}
-          >
-            <ChevronLeft className="h-4 w-4" />
-            <span>Previous</span>
-          </button>
-
-          {/* Progress Indicator */}
-          <div className="flex items-center space-x-4 text-sm text-gray-600">
-            <span>
-              {navState.currentIndex + 1} of {navState.totalItems}
-            </span>
-            <div className="w-32 bg-gray-200 rounded-full h-2">
-              <div 
-                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                style={{ 
-                  width: `${((navState.currentIndex + 1) / navState.totalItems) * 100}%` 
-                }}
+      {/* Navigation Controls - slim bar inspired by Viva */}
+      <div className="bg-white border-t border-gray-200 px-4 py-2">
+        <div className="flex items-center gap-3">
+          <div className="flex-1">
+            <div className="w-full bg-gray-200 rounded-full h-1.5">
+              <div
+                className="progress-bar h-1.5 rounded-full transition-all duration-300"
+                style={{ width: `${((navState.currentIndex + 1) / navState.totalItems) * 100}%` }}
               />
             </div>
           </div>
-
-          {/* Next Button */}
-          <button
-            onClick={handleNext}
-            disabled={!navState.canGoNext}
-            className={`
-              flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all
-              ${navState.canGoNext
-                ? 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800'
-                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-              }
-            `}
-          >
-            <span>Next</span>
-            <ChevronRight className="h-4 w-4" />
-          </button>
-        </div>
-
-        {/* Current Content Info */}
-        <div className="mt-2 text-center">
-          <div className="text-sm font-medium text-gray-900">
-            {currentContent.title}
+          <div className="text-[12px] text-gray-600 whitespace-nowrap">
+            {navState.currentIndex + 1} / {navState.totalItems}
           </div>
-          <div className="text-xs text-gray-500">
-            {currentContent.section}
-            {currentContent.subsection && ` • ${currentContent.subsection}`}
-            {` • ${currentContent.type}`}
+          <div className="ml-auto flex items-center gap-1">
+            <button
+              onClick={handlePrevious}
+              disabled={!navState.canGoPrevious}
+              className={`px-3 py-1.5 text-[12px] uppercase tracking-wide rounded-md border transition-colors
+                ${navState.canGoPrevious ? 'border-gray-300 text-gray-800 hover:bg-gray-50' : 'border-gray-200 text-gray-400 cursor-not-allowed'}`}
+            >
+              Prev
+            </button>
+            <button
+              onClick={handleNext}
+              disabled={!navState.canGoNext}
+              className={`px-3 py-1.5 text-[12px] uppercase tracking-wide rounded-md border transition-colors ml-1
+                ${navState.canGoNext ? 'border-ms-blue text-ms-blue hover:bg-blue-50' : 'border-gray-200 text-gray-400 cursor-not-allowed'}`}
+            >
+              Next
+            </button>
           </div>
         </div>
       </div>

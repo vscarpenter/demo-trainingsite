@@ -1,5 +1,9 @@
 import { ContentItem, ContentSection } from '../types/content';
 
+// Generated on 2025-09-11T01:49:18.438Z
+// Content hash: d3a397b2
+// Total sections: 7, Total items: 173
+
 export const contentSections: ContentSection[] = [
   {
     id: 'introduction',
@@ -1601,6 +1605,15 @@ export const contentSections: ContentSection[] = [
     ]
   }
 ];
+
+// Content metadata
+export const contentMetadata = {
+  generatedAt: '2025-09-11T01:49:18.438Z',
+  contentHash: 'd3a397b2',
+  totalSections: 7,
+  totalItems: 173,
+  version: '1.0.0'
+};
 
 // Flatten all content items into a single array for navigation
 export const allContentItems: ContentItem[] = contentSections

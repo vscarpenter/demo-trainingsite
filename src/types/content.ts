@@ -23,3 +23,10 @@ export interface NavigationState {
   canGoNext: boolean;
   canGoPrevious: boolean;
 }
+
+export interface SearchResult {
+  item: ContentItem;
+  matchType: 'title' | 'section' | 'subsection';
+  highlightedTitle: string;
+  highlightedSnippet?: string;
+}

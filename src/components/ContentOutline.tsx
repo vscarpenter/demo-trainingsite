@@ -1,6 +1,6 @@
 import React from 'react';
-import { FileText, BookOpen, ChevronRight, ChevronDown } from 'lucide-react';
-import { contentSections } from '../data/contentStructure';
+import { FileText, BookOpen, ChevronRight, ChevronDown, Check } from 'lucide-react';
+import { contentSections, allContentItems } from '../data/contentStructure';
 import { ContentItem } from '../types/content';
 
 interface ContentOutlineProps {
@@ -245,16 +245,24 @@ const ContentOutline: React.FC<ContentOutlineProps> = ({
                         <ul className="mt-1 mb-2 ml-8 space-y-1">
                           {items.map(item => {
                             const activeItem = item.id === currentContentId;
+                            const globalIndex = allContentItems.findIndex(i => i.id === item.id);
+                            const currentIndex = currentContentId ? allContentItems.findIndex(i => i.id === currentContentId) : -1;
+                            const isCompleted = currentIndex >= 0 && globalIndex >= 0 && globalIndex <= currentIndex;
                             return (
                               <li key={item.id}>
                                 <button
                                   type="button"
                                   onClick={() => onContentSelect?.(item.id)}
-                                  className={`w-full text-left px-3 py-1.5 rounded-md text-xs
+                                  className={`w-full text-left px-3 py-1.5 rounded-md text-xs flex items-center justify-between
                                     hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500
                                     ${activeItem ? 'bg-blue-100 text-blue-900' : 'text-gray-700'}`}
                                 >
                                   <span className="truncate block">{item.title}</span>
+                                  <span className="ml-2 shrink-0">
+                                    {isCompleted && (
+                                      <Check className={`h-3.5 w-3.5 ${activeItem ? 'text-blue-700' : 'text-gray-500'}`} />
+                                    )}
+                                  </span>
                                 </button>
                               </li>
                             );

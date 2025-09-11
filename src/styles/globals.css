@@ -135,10 +135,24 @@
   height: 16px;
 }
 
+/* Larger logo variant for sidebar branding */
+.microsoft-logo-squares-lg {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  width: 56px;
+  height: 56px;
+}
+
 .microsoft-logo-squares > div:nth-child(1) { background-color: #f25022; }
 .microsoft-logo-squares > div:nth-child(2) { background-color: #7fba00; }
 .microsoft-logo-squares > div:nth-child(3) { background-color: #00a4ef; }
 .microsoft-logo-squares > div:nth-child(4) { background-color: #ffb900; }
+
+.microsoft-logo-squares-lg > div:nth-child(1) { background-color: #f25022; }
+.microsoft-logo-squares-lg > div:nth-child(2) { background-color: #7fba00; }
+.microsoft-logo-squares-lg > div:nth-child(3) { background-color: #00a4ef; }
+.microsoft-logo-squares-lg > div:nth-child(4) { background-color: #ffb900; }
 
 /* Scrollbar styling */
 .custom-scrollbar::-webkit-scrollbar {
@@ -156,4 +170,89 @@
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
+}
+
+/* Dialog animations and enhancements */
+@keyframes slide-in-from-top-4 {
+  from {
+    transform: translateY(-1rem);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-from-bottom-4 {
+  from {
+    transform: translateY(1rem);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in-0 {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-in {
+  animation-duration: 300ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  animation-fill-mode: both;
+}
+
+.slide-in-from-top-4 {
+  animation-name: slide-in-from-top-4;
+}
+
+.slide-in-from-bottom-4 {
+  animation-name: slide-in-from-bottom-4;
+}
+
+.fade-in-0 {
+  animation-name: fade-in-0;
+}
+
+/* Enhanced shadow utilities */
+.shadow-3xl {
+  box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Dialog backdrop blur enhancement */
+.backdrop-blur-sm {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Microsoft design system enhancements */
+.ms-gradient-blue {
+  background: linear-gradient(135deg, #0078d4 0%, #106ebe 100%);
+}
+
+.ms-gradient-subtle {
+  background: linear-gradient(135deg, rgba(0, 120, 212, 0.05) 0%, rgba(0, 120, 212, 0.1) 100%);
+}
+
+/* Focus ring enhancements */
+.focus-ring-ms {
+  @apply focus:ring-2 focus:ring-ms-blue/20 focus:ring-offset-2;
+}
+
+/* Hover state enhancements */
+.hover-lift {
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+
+.hover-lift:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }

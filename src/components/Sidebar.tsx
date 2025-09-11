@@ -48,8 +48,15 @@ const Sidebar: React.FC<SidebarProps> = ({ currentContentId, onContentSelect }) 
   const percent = Math.round(((navState.currentIndex + 1) / navState.totalItems) * 100);
 
   return (
-    <aside className="w-80 bg-white sidebar-shadow flex flex-col h-full border-r border-gray-400">
-      {/* Sidebar Header removed per request */}
+    <aside className="w-80 bg-white sidebar-shadow flex flex-col h-full border-r border-gray-200">
+      {/* Branding (matches inspiration left rail) */}
+      <div className="h-28 px-6 flex items-center justify-center border-b border-gray-200">
+        <img
+          src="/microsoft-logo.png"
+          alt="Microsoft"
+          className="w-[300px] h-[88px] object-contain object-center select-none"
+        />
+      </div>
 
       {/* Navigation Tabs */}
       <div className="border-b border-gray-200">
@@ -66,7 +73,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentContentId, onContentSelect }) 
                 aria-selected={activeTab === tab.id}
                 tabIndex={activeTab === tab.id ? 0 : -1}
                 className={`
-                  flex-1 flex items-center justify-center space-x-2 py-3 text-xs font-medium
+                  flex-1 flex items-center justify-center space-x-2 py-3 text-[11px] tracking-wide font-semibold uppercase
                   transition-colors duration-200
                   ${
                     activeTab === tab.id
@@ -129,8 +136,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentContentId, onContentSelect }) 
           <span>Progress</span>
           <span>{percent}%</span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
-          <div className="progress-bar h-2 rounded-full" style={{ width: `${percent}%` }}></div>
+        <div className="w-full bg-gray-200 rounded-full h-1.5">
+          <div className="progress-bar h-1.5 rounded-full" style={{ width: `${percent}%` }}></div>
         </div>
         <div className="mt-2 text-xs text-gray-500">
           {navState.currentIndex + 1} of {navState.totalItems} items viewed
