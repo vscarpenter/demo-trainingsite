@@ -101,8 +101,6 @@ const ContentOutline: React.FC<ContentOutlineProps> = ({
       return;
     }
     
-    console.log('ContentOutline: currentContentId changed to:', currentContentId);
-    
     // Find the current section and subsection
     let currentSectionId: string | null = null;
     let currentSubsectionKey: string | null = null;
@@ -120,20 +118,17 @@ const ContentOutline: React.FC<ContentOutlineProps> = ({
       }
     }
     
-    console.log('ContentOutline: Found section:', currentSectionId, 'subsection:', currentSubsectionKey);
-    
     // Update sections - close all, open only current
-    setExpandedSections(prev => {
+    setExpandedSections(() => {
       const next: Record<string, boolean> = {};
       groupedSections.forEach(sec => {
         next[sec.id] = sec.id === currentSectionId;
       });
-      console.log('ContentOutline: Setting expanded sections:', next);
       return next;
     });
     
     // Update subsections - close all, open only current
-    setExpandedSubsections(prev => {
+    setExpandedSubsections(() => {
       const next: Record<string, boolean> = {};
       groupedSections.forEach(sec => {
         Object.keys(sec.groupedItems).forEach(subKey => {
@@ -141,7 +136,6 @@ const ContentOutline: React.FC<ContentOutlineProps> = ({
           next[key] = key === currentSubsectionKey;
         });
       });
-      console.log('ContentOutline: Setting expanded subsections:', next);
       return next;
     });
   }, [currentContentId, groupedSections]);

@@ -1,5 +1,5 @@
 // Auto-generated search index - DO NOT EDIT MANUALLY
-// Generated on 2025-09-13T19:35:09.887Z
+// Generated on 2025-09-13T20:09:07.628Z
 // Total items indexed: 173
 
 export interface SearchIndexItem {
@@ -37,7 +37,7 @@ export interface SearchIndex {
 
 export const searchIndex: SearchIndex = {
   "metadata": {
-    "generatedAt": "2025-09-13T19:35:09.559Z",
+    "generatedAt": "2025-09-13T20:09:07.307Z",
     "totalItems": 173,
     "version": "1.0.0"
   },

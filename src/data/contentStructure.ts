@@ -1,6 +1,6 @@
 import { ContentItem, ContentSection } from '../types/content';
 
-// Generated on 2025-09-13T19:35:09.437Z
+// Generated on 2025-09-13T20:09:07.183Z
 // Content hash: d3a397b2
 // Total sections: 7, Total items: 173
 
@@ -1608,7 +1608,7 @@ export const contentSections: ContentSection[] = [
 
 // Content metadata
 export const contentMetadata = {
-  generatedAt: '2025-09-13T19:35:09.438Z',
+  generatedAt: '2025-09-13T20:09:07.184Z',
   contentHash: 'd3a397b2',
   totalSections: 7,
   totalItems: 173,

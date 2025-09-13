@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { X, Palette, Monitor, Eye, Volume2, Keyboard, Shield, Download, RotateCcw } from 'lucide-react';
+import { X, Palette, Monitor, Eye, Volume2, Shield, Download, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface SettingsDialogProps {
