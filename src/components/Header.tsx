@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import { Search, HelpCircle, Settings, User, X, Menu } from 'lucide-react';
 import { Button } from './ui/button';
 import { COURSE_TITLE } from '@/lib/constants';
-import SettingsDialog from './SettingsDialog';
+
+const SettingsDialog = lazy(() => import('./SettingsDialog'));
 
 interface HeaderProps {
   onToggleSidebar?: () => void;
@@ -73,10 +74,14 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, isSidebarOpen, onOpenS
       </div>
 
       {/* Settings Dialog */}
-      <SettingsDialog 
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-      />
+      {isSettingsOpen && (
+        <Suspense fallback={null}>
+          <SettingsDialog 
+            isOpen={isSettingsOpen}
+            onClose={() => setIsSettingsOpen(false)}
+          />
+        </Suspense>
+      )}
     </header>
   );
 };

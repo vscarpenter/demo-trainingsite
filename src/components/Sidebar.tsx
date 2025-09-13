@@ -69,7 +69,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentContentId, onContentSelect }) 
                 id={`tab-${tab.id}`}
                 role="tab"
                 onClick={() => setActiveTab(tab.id)}
-                ref={(el) => (tabRefs.current[tab.id] = el)}
+                ref={(el) => {tabRefs.current[tab.id] = el}}
                 aria-selected={activeTab === tab.id}
                 tabIndex={activeTab === tab.id ? 0 : -1}
                 className={`
