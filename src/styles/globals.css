@@ -256,3 +256,120 @@
   transform: translateY(-1px);
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
+
+/* High contrast mode */
+.high-contrast {
+  --background: 0 0% 100%;
+  --foreground: 0 0% 0%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 0%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 0%;
+  --primary: 0 0% 0%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 0 0% 90%;
+  --secondary-foreground: 0 0% 0%;
+  --muted: 0 0% 90%;
+  --muted-foreground: 0 0% 30%;
+  --accent: 0 0% 90%;
+  --accent-foreground: 0 0% 0%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 0 0% 0%;
+  --input: 0 0% 0%;
+  --ring: 0 0% 0%;
+}
+
+.high-contrast .dark {
+  --background: 0 0% 0%;
+  --foreground: 0 0% 100%;
+  --card: 0 0% 0%;
+  --card-foreground: 0 0% 100%;
+  --popover: 0 0% 0%;
+  --popover-foreground: 0 0% 100%;
+  --primary: 0 0% 100%;
+  --primary-foreground: 0 0% 0%;
+  --secondary: 0 0% 20%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 0 0% 20%;
+  --muted-foreground: 0 0% 80%;
+  --accent: 0 0% 20%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 0 0% 100%;
+  --input: 0 0% 100%;
+  --ring: 0 0% 100%;
+}
+
+/* Settings-specific styles */
+.settings-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  transition: all 0.2s ease-in-out;
+}
+
+.settings-toggle:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+/* Content viewer styling for dark mode */
+.content-viewer {
+  @apply text-foreground bg-background;
+}
+
+.content-viewer h1,
+.content-viewer h2,
+.content-viewer h3,
+.content-viewer h4,
+.content-viewer h5,
+.content-viewer h6 {
+  @apply text-foreground;
+}
+
+.content-viewer p {
+  @apply text-foreground;
+}
+
+.content-viewer a {
+  @apply text-ms-blue hover:text-ms-blue/80;
+}
+
+.content-viewer code {
+  @apply bg-muted text-foreground px-1 py-0.5 rounded text-sm;
+}
+
+.content-viewer pre {
+  @apply bg-muted text-foreground p-4 rounded-lg overflow-x-auto;
+}
+
+.content-viewer blockquote {
+  @apply border-l-4 border-muted-foreground pl-4 italic text-muted-foreground;
+}
+
+.content-viewer ul,
+.content-viewer ol {
+  @apply text-foreground;
+}
+
+.content-viewer li {
+  @apply text-foreground;
+}
+
+.content-viewer table {
+  @apply border border-border;
+}
+
+.content-viewer th,
+.content-viewer td {
+  @apply border border-border px-4 py-2 text-foreground;
+}
+
+.content-viewer th {
+  @apply bg-muted font-semibold;
+}

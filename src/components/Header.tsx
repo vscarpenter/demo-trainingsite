@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Search, HelpCircle, Settings, User, X, Menu } from 'lucide-react';
 import { Button } from './ui/button';
 import { COURSE_TITLE } from '@/lib/constants';
+import SettingsDialog from './SettingsDialog';
 
 interface HeaderProps {
   onToggleSidebar?: () => void;
@@ -11,8 +12,10 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ onToggleSidebar, isSidebarOpen, onOpenSearch, onOpenHelp }) => {
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
   return (
-    <header className="bg-white border-b border-gray-200 h-12 flex items-center px-4 relative z-10">
+    <header className="bg-card border-b border-border h-12 flex items-center px-4 relative z-10">
       <div className="flex items-center flex-1">
         {/* Mobile sidebar toggle */}
         <Button
@@ -28,7 +31,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, isSidebarOpen, onOpenS
         </Button>
         {/* Header Title (logo removed; larger title) */}
         <div className="ml-1" aria-label="Page title">
-          <span className="text-gray-900 font-semibold text-lg md:text-xl">{COURSE_TITLE}</span>
+          <span className="text-foreground font-semibold text-lg md:text-xl">{COURSE_TITLE}</span>
         </div>
       </div>
 
@@ -52,7 +55,13 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, isSidebarOpen, onOpenS
         >
           <HelpCircle className="h-4 w-4" />
         </Button>
-        <Button aria-label="Settings" variant="ghost" size="icon" className="h-8 w-8">
+        <Button 
+          aria-label="Settings" 
+          variant="ghost" 
+          size="icon" 
+          className="h-8 w-8"
+          onClick={() => setIsSettingsOpen(true)}
+        >
           <Settings className="h-4 w-4" />
         </Button>
         <Button aria-label="Account" variant="ghost" size="icon" className="h-8 w-8">
@@ -62,6 +71,12 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, isSidebarOpen, onOpenS
           <X className="h-4 w-4" />
         </Button>
       </div>
+
+      {/* Settings Dialog */}
+      <SettingsDialog 
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+      />
     </header>
   );
 };

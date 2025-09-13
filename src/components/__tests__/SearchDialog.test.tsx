@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import SearchDialog from '../SearchDialog'
-import { ContentItem } from '@/types/content'
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import SearchDialog from '../SearchDialog';
+import { ContentItem } from '@/types/content';
 
 const mockContentItems: ContentItem[] = [
   {
@@ -32,15 +32,15 @@ const mockContentItems: ContentItem[] = [
     subsection: 'PowerPoint',
     order: 3
   }
-]
+];
 
 describe('SearchDialog', () => {
-  const mockOnClose = vi.fn()
-  const mockOnSelectContent = vi.fn()
+  const mockOnClose = vi.fn();
+  const mockOnSelectContent = vi.fn();
 
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+  });
 
   it('should not render when isOpen is false', () => {
     render(
@@ -50,10 +50,10 @@ describe('SearchDialog', () => {
         contentItems={mockContentItems}
         onSelectContent={mockOnSelectContent}
       />
-    )
+    );
 
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
-  })
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
 
   it('should render when isOpen is true', () => {
     render(
@@ -63,11 +63,11 @@ describe('SearchDialog', () => {
         contentItems={mockContentItems}
         onSelectContent={mockOnSelectContent}
       />
-    )
+    );
 
-    expect(screen.getByRole('dialog')).toBeInTheDocument()
-    expect(screen.getByPlaceholderText('Search content...')).toBeInTheDocument()
-  })
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Search content...')).toBeInTheDocument();
+  });
 
   it('should focus search input when opened', () => {
     render(
@@ -77,10 +77,10 @@ describe('SearchDialog', () => {
         contentItems={mockContentItems}
         onSelectContent={mockOnSelectContent}
       />
-    )
+    );
 
-    expect(screen.getByPlaceholderText('Search content...')).toHaveFocus()
-  })
+    expect(screen.getByPlaceholderText('Search content...')).toHaveFocus();
+  });
 
   it('should show initial state with search prompt', () => {
     render(
@@ -90,14 +90,14 @@ describe('SearchDialog', () => {
         contentItems={mockContentItems}
         onSelectContent={mockOnSelectContent}
       />
-    )
+    );
 
-    expect(screen.getByText('Search Learning Content')).toBeInTheDocument()
-    expect(screen.getByText('Type to search across all course materials, sections, and topics')).toBeInTheDocument()
-  })
+    expect(screen.getByText('Search Learning Content')).toBeInTheDocument();
+    expect(screen.getByText('Type to search across all course materials, sections, and topics')).toBeInTheDocument();
+  });
 
   it('should call onClose when close button is clicked', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup();
     
     render(
       <SearchDialog
@@ -106,16 +106,16 @@ describe('SearchDialog', () => {
         contentItems={mockContentItems}
         onSelectContent={mockOnSelectContent}
       />
-    )
+    );
 
-    const closeButton = screen.getByLabelText('Close search dialog')
-    await user.click(closeButton)
+    const closeButton = screen.getByLabelText('Close search dialog');
+    await user.click(closeButton);
 
-    expect(mockOnClose).toHaveBeenCalledTimes(1)
-  })
+    expect(mockOnClose).toHaveBeenCalledTimes(1);
+  });
 
   it('should call onClose when Escape key is pressed', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup();
     
     render(
       <SearchDialog
@@ -124,14 +124,14 @@ describe('SearchDialog', () => {
         contentItems={mockContentItems}
         onSelectContent={mockOnSelectContent}
       />
-    )
+    );
 
-    await user.keyboard('{Escape}')
-    expect(mockOnClose).toHaveBeenCalledTimes(1)
-  })
+    await user.keyboard('{Escape}');
+    expect(mockOnClose).toHaveBeenCalledTimes(1);
+  });
 
   it('should call onClose when backdrop is clicked', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup();
     
     render(
       <SearchDialog
@@ -140,15 +140,15 @@ describe('SearchDialog', () => {
         contentItems={mockContentItems}
         onSelectContent={mockOnSelectContent}
       />
-    )
+    );
 
-    const backdrop = screen.getByRole('dialog')
-    await user.click(backdrop)
-    expect(mockOnClose).toHaveBeenCalledTimes(1)
-  })
+    const backdrop = screen.getByRole('dialog');
+    await user.click(backdrop);
+    expect(mockOnClose).toHaveBeenCalledTimes(1);
+  });
 
   it('should not close when clicking inside dialog content', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup();
     
     render(
       <SearchDialog
@@ -157,15 +157,15 @@ describe('SearchDialog', () => {
         contentItems={mockContentItems}
         onSelectContent={mockOnSelectContent}
       />
-    )
+    );
 
-    const searchInput = screen.getByPlaceholderText('Search content...')
-    await user.click(searchInput)
-    expect(mockOnClose).not.toHaveBeenCalled()
-  })
+    const searchInput = screen.getByPlaceholderText('Search content...');
+    await user.click(searchInput);
+    expect(mockOnClose).not.toHaveBeenCalled();
+  });
 
   it('should show search results when typing', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup();
     
     render(
       <SearchDialog
@@ -174,21 +174,21 @@ describe('SearchDialog', () => {
         contentItems={mockContentItems}
         onSelectContent={mockOnSelectContent}
       />
-    )
+    );
 
-    const searchInput = screen.getByPlaceholderText('Search content...')
-    await user.type(searchInput, 'Word')
+    const searchInput = screen.getByPlaceholderText('Search content...');
+    await user.type(searchInput, 'Word');
 
     // Wait for debounced search
     await waitFor(() => {
       expect(screen.getByText((_content, element) => {
-        return element?.textContent === 'Word Introduction'
-      })).toBeInTheDocument()
-    }, { timeout: 500 })
-  })
+        return element?.textContent === 'Word Introduction';
+      })).toBeInTheDocument();
+    }, { timeout: 500 });
+  });
 
   it('should show no results message when no matches found', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup();
     
     render(
       <SearchDialog
@@ -197,18 +197,18 @@ describe('SearchDialog', () => {
         contentItems={mockContentItems}
         onSelectContent={mockOnSelectContent}
       />
-    )
+    );
 
-    const searchInput = screen.getByPlaceholderText('Search content...')
-    await user.type(searchInput, 'nonexistent')
+    const searchInput = screen.getByPlaceholderText('Search content...');
+    await user.type(searchInput, 'nonexistent');
 
     await waitFor(() => {
-      expect(screen.getByText('No results found')).toBeInTheDocument()
-    }, { timeout: 500 })
-  })
+      expect(screen.getByText('No results found')).toBeInTheDocument();
+    }, { timeout: 500 });
+  });
 
   it('should display content type icons correctly', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup();
     
     render(
       <SearchDialog
@@ -217,27 +217,27 @@ describe('SearchDialog', () => {
         contentItems={mockContentItems}
         onSelectContent={mockOnSelectContent}
       />
-    )
+    );
 
-    const searchInput = screen.getByPlaceholderText('Search content...')
-    await user.type(searchInput, 'Office')
+    const searchInput = screen.getByPlaceholderText('Search content...');
+    await user.type(searchInput, 'Office');
 
     await waitFor(() => {
       // Should show all three items from Office Apps section
       expect(screen.getByText((_content, element) => {
-        return element?.textContent === 'Word Introduction'
-      })).toBeInTheDocument()
+        return element?.textContent === 'Word Introduction';
+      })).toBeInTheDocument();
       expect(screen.getByText((_content, element) => {
-        return element?.textContent === 'Excel Formulas'
-      })).toBeInTheDocument()
+        return element?.textContent === 'Excel Formulas';
+      })).toBeInTheDocument();
       expect(screen.getByText((_content, element) => {
-        return element?.textContent === 'PowerPoint Presentation'
-      })).toBeInTheDocument()
-    }, { timeout: 500 })
-  })
+        return element?.textContent === 'PowerPoint Presentation';
+      })).toBeInTheDocument();
+    }, { timeout: 500 });
+  });
 
   it('should call onSelectContent when result is clicked', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup();
     
     render(
       <SearchDialog
@@ -246,28 +246,28 @@ describe('SearchDialog', () => {
         contentItems={mockContentItems}
         onSelectContent={mockOnSelectContent}
       />
-    )
+    );
 
-    const searchInput = screen.getByPlaceholderText('Search content...')
-    await user.type(searchInput, 'Word')
+    const searchInput = screen.getByPlaceholderText('Search content...');
+    await user.type(searchInput, 'Word');
 
     await waitFor(() => {
       expect(screen.getByText((_content, element) => {
-        return element?.textContent === 'Word Introduction'
-      })).toBeInTheDocument()
-    }, { timeout: 500 })
+        return element?.textContent === 'Word Introduction';
+      })).toBeInTheDocument();
+    }, { timeout: 500 });
 
     const result = screen.getByText((_content, element) => {
-      return element?.textContent === 'Word Introduction'
-    })
-    await user.click(result)
+      return element?.textContent === 'Word Introduction';
+    });
+    await user.click(result);
 
-    expect(mockOnSelectContent).toHaveBeenCalledWith('word-intro')
-    expect(mockOnClose).toHaveBeenCalledTimes(1)
-  })
+    expect(mockOnSelectContent).toHaveBeenCalledWith('word-intro');
+    expect(mockOnClose).toHaveBeenCalledTimes(1);
+  });
 
   it('should support keyboard navigation', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup();
     
     render(
       <SearchDialog
@@ -276,30 +276,30 @@ describe('SearchDialog', () => {
         contentItems={mockContentItems}
         onSelectContent={mockOnSelectContent}
       />
-    )
+    );
 
-    const searchInput = screen.getByPlaceholderText('Search content...')
-    await user.type(searchInput, 'Office')
+    const searchInput = screen.getByPlaceholderText('Search content...');
+    await user.type(searchInput, 'Office');
 
     await waitFor(() => {
       expect(screen.getByText((_content, element) => {
-        return element?.textContent === 'Word Introduction'
-      })).toBeInTheDocument()
-    }, { timeout: 500 })
+        return element?.textContent === 'Word Introduction';
+      })).toBeInTheDocument();
+    }, { timeout: 500 });
 
     // Navigate down
-    await user.keyboard('{ArrowDown}')
-    await user.keyboard('{ArrowDown}')
+    await user.keyboard('{ArrowDown}');
+    await user.keyboard('{ArrowDown}');
     
     // Select with Enter
-    await user.keyboard('{Enter}')
+    await user.keyboard('{Enter}');
 
-    expect(mockOnSelectContent).toHaveBeenCalledWith('excel-formulas')
-    expect(mockOnClose).toHaveBeenCalledTimes(1)
-  })
+    expect(mockOnSelectContent).toHaveBeenCalledWith('excel-formulas');
+    expect(mockOnClose).toHaveBeenCalledTimes(1);
+  });
 
   it('should show result count in footer', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup();
     
     render(
       <SearchDialog
@@ -308,18 +308,18 @@ describe('SearchDialog', () => {
         contentItems={mockContentItems}
         onSelectContent={mockOnSelectContent}
       />
-    )
+    );
 
-    const searchInput = screen.getByPlaceholderText('Search content...')
-    await user.type(searchInput, 'Office')
+    const searchInput = screen.getByPlaceholderText('Search content...');
+    await user.type(searchInput, 'Office');
 
     await waitFor(() => {
-      expect(screen.getByText('3 results')).toBeInTheDocument()
-    }, { timeout: 500 })
-  })
+      expect(screen.getByText('3 results')).toBeInTheDocument();
+    }, { timeout: 500 });
+  });
 
   it('should show keyboard shortcuts in footer', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup();
     
     render(
       <SearchDialog
@@ -328,17 +328,17 @@ describe('SearchDialog', () => {
         contentItems={mockContentItems}
         onSelectContent={mockOnSelectContent}
       />
-    )
+    );
 
-    const searchInput = screen.getByPlaceholderText('Search content...')
-    await user.type(searchInput, 'Word')
+    const searchInput = screen.getByPlaceholderText('Search content...');
+    await user.type(searchInput, 'Word');
 
     await waitFor(() => {
-      expect(screen.getByText('↑↓ Navigate')).toBeInTheDocument()
-      expect(screen.getByText('↵ Select')).toBeInTheDocument()
-      expect(screen.getByText('Esc Close')).toBeInTheDocument()
-    }, { timeout: 500 })
-  })
+      expect(screen.getByText('↑↓ Navigate')).toBeInTheDocument();
+      expect(screen.getByText('↵ Select')).toBeInTheDocument();
+      expect(screen.getByText('Esc Close')).toBeInTheDocument();
+    }, { timeout: 500 });
+  });
 
   it('should prevent body scroll when open', () => {
     render(
@@ -348,10 +348,10 @@ describe('SearchDialog', () => {
         contentItems={mockContentItems}
         onSelectContent={mockOnSelectContent}
       />
-    )
+    );
 
-    expect(document.body.style.overflow).toBe('hidden')
-  })
+    expect(document.body.style.overflow).toBe('hidden');
+  });
 
   it('should restore body scroll when closed', () => {
     const { rerender } = render(
@@ -361,9 +361,9 @@ describe('SearchDialog', () => {
         contentItems={mockContentItems}
         onSelectContent={mockOnSelectContent}
       />
-    )
+    );
 
-    expect(document.body.style.overflow).toBe('hidden')
+    expect(document.body.style.overflow).toBe('hidden');
 
     rerender(
       <SearchDialog
@@ -372,10 +372,10 @@ describe('SearchDialog', () => {
         contentItems={mockContentItems}
         onSelectContent={mockOnSelectContent}
       />
-    )
+    );
 
-    expect(document.body.style.overflow).toBe('unset')
-  })
+    expect(document.body.style.overflow).toBe('unset');
+  });
 
   it('should reset state when dialog closes', () => {
     const { rerender } = render(
@@ -385,10 +385,10 @@ describe('SearchDialog', () => {
         contentItems={mockContentItems}
         onSelectContent={mockOnSelectContent}
       />
-    )
+    );
 
-    const searchInput = screen.getByPlaceholderText('Search content...')
-    fireEvent.change(searchInput, { target: { value: 'test query' } })
+    const searchInput = screen.getByPlaceholderText('Search content...');
+    fireEvent.change(searchInput, { target: { value: 'test query' } });
 
     rerender(
       <SearchDialog
@@ -397,7 +397,7 @@ describe('SearchDialog', () => {
         contentItems={mockContentItems}
         onSelectContent={mockOnSelectContent}
       />
-    )
+    );
 
     rerender(
       <SearchDialog
@@ -406,9 +406,9 @@ describe('SearchDialog', () => {
         contentItems={mockContentItems}
         onSelectContent={mockOnSelectContent}
       />
-    )
+    );
 
-    const newSearchInput = screen.getByPlaceholderText('Search content...')
-    expect(newSearchInput).toHaveValue('')
-  })
-})
+    const newSearchInput = screen.getByPlaceholderText('Search content...');
+    expect(newSearchInput).toHaveValue('');
+  });
+});

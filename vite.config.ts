@@ -45,6 +45,8 @@ export default defineConfig(({ command, mode }) => {
         allow: ['..']
       }
     },
+    // Ensure public files are served correctly
+    publicDir: 'public',
     preview: {
       // Configure preview server
       port: 4173,

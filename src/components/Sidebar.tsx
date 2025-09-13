@@ -48,9 +48,9 @@ const Sidebar: React.FC<SidebarProps> = ({ currentContentId, onContentSelect }) 
   const percent = Math.round(((navState.currentIndex + 1) / navState.totalItems) * 100);
 
   return (
-    <aside className="w-80 bg-white sidebar-shadow flex flex-col h-full border-r border-gray-200">
+    <aside className="w-80 bg-card sidebar-shadow flex flex-col h-full border-r border-border">
       {/* Branding (matches inspiration left rail) */}
-      <div className="h-28 px-6 flex items-center justify-center border-b border-gray-200">
+      <div className="h-28 px-6 flex items-center justify-center border-b border-border">
         <img
           src="/microsoft-logo.png"
           alt="Microsoft"
@@ -59,7 +59,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentContentId, onContentSelect }) 
       </div>
 
       {/* Navigation Tabs */}
-      <div className="border-b border-gray-200">
+      <div className="border-b border-border">
         <div className="flex" role="tablist" aria-label="Sidebar Tabs" onKeyDown={onKeyDownTabs}>
           {tabs.map((tab) => {
             const Icon = tab.icon;
@@ -77,8 +77,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentContentId, onContentSelect }) 
                   transition-colors duration-200
                   ${
                     activeTab === tab.id
-                      ? 'text-ms-blue border-b-2 border-ms-blue bg-blue-50'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                      ? 'text-ms-blue border-b-2 border-ms-blue bg-ms-blue/10'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                   }
                 `}
               >
@@ -99,7 +99,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentContentId, onContentSelect }) 
             aria-labelledby="tab-MENU"
             hidden={activeTab !== 'MENU'}
           >
-            <h3 className="text-sm font-semibold text-gray-900 mb-4">
+            <h3 className="text-sm font-semibold text-foreground mb-4">
               Microsoft 365 Copilot Experience
             </h3>
             <ContentOutline 
@@ -113,7 +113,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentContentId, onContentSelect }) 
             role="tabpanel"
             aria-labelledby="tab-TRANSCRIPT"
             hidden={activeTab !== 'TRANSCRIPT'}
-            className="text-sm text-gray-600"
+            className="text-sm text-muted-foreground"
           >
             <p>Coming Soon</p>
           </section>
@@ -123,7 +123,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentContentId, onContentSelect }) 
             role="tabpanel"
             aria-labelledby="tab-RESOURCES"
             hidden={activeTab !== 'RESOURCES'}
-            className="text-sm text-gray-600"
+            className="text-sm text-muted-foreground"
           >
             <p>Coming Soon</p>
           </section>
@@ -131,15 +131,15 @@ const Sidebar: React.FC<SidebarProps> = ({ currentContentId, onContentSelect }) 
       </div>
 
       {/* Progress Section */}
-      <div className="p-4 border-t border-gray-200">
-        <div className="flex items-center justify-between text-xs text-gray-600 mb-2">
+      <div className="p-4 border-t border-border">
+        <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
           <span>Progress</span>
           <span>{percent}%</span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-1.5">
+        <div className="w-full bg-muted rounded-full h-1.5">
           <div className="progress-bar h-1.5 rounded-full" style={{ width: `${percent}%` }}></div>
         </div>
-        <div className="mt-2 text-xs text-gray-500">
+        <div className="mt-2 text-xs text-muted-foreground">
           {navState.currentIndex + 1} of {navState.totalItems} items viewed
         </div>
       </div>

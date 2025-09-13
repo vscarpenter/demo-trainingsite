@@ -305,6 +305,24 @@ const HelpDialog: React.FC<HelpDialogProps> = ({ isOpen, onClose }) => {
                       </td>
                     </tr>
                     <tr className="hover:bg-gray-50/50 transition-colors duration-150">
+                      <td className="border-b border-gray-100 px-4 py-3 font-medium text-gray-900">First Content</td>
+                      <td className="border-b border-gray-100 px-4 py-3">
+                        <kbd className="px-2.5 py-1 bg-gradient-to-b from-white to-gray-50 border border-gray-200 rounded-md text-sm font-mono shadow-sm">Home</kbd>
+                      </td>
+                      <td className="border-b border-gray-100 px-4 py-3 text-gray-600">
+                        Jump to the first content item
+                      </td>
+                    </tr>
+                    <tr className="hover:bg-gray-50/50 transition-colors duration-150">
+                      <td className="border-b border-gray-100 px-4 py-3 font-medium text-gray-900">Last Content</td>
+                      <td className="border-b border-gray-100 px-4 py-3">
+                        <kbd className="px-2.5 py-1 bg-gradient-to-b from-white to-gray-50 border border-gray-200 rounded-md text-sm font-mono shadow-sm">End</kbd>
+                      </td>
+                      <td className="border-b border-gray-100 px-4 py-3 text-gray-600">
+                        Jump to the last content item
+                      </td>
+                    </tr>
+                    <tr className="hover:bg-gray-50/50 transition-colors duration-150">
                       <td className="border-b border-gray-100 px-4 py-3 font-medium text-gray-900">Open Search</td>
                       <td className="border-b border-gray-100 px-4 py-3">
                         <div className="flex items-center gap-1">

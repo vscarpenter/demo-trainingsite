@@ -1,6 +1,6 @@
 import { ContentItem, ContentSection } from '../types/content';
 
-// Generated on 2025-09-11T01:49:18.438Z
+// Generated on 2025-09-13T19:35:09.437Z
 // Content hash: d3a397b2
 // Total sections: 7, Total items: 173
 
@@ -1608,7 +1608,7 @@ export const contentSections: ContentSection[] = [
 
 // Content metadata
 export const contentMetadata = {
-  generatedAt: '2025-09-11T01:49:18.438Z',
+  generatedAt: '2025-09-13T19:35:09.438Z',
   contentHash: 'd3a397b2',
   totalSections: 7,
   totalItems: 173,
@@ -1645,4 +1645,12 @@ export const getNextItem = (currentId: string): ContentItem | null => {
 export const getPreviousItem = (currentId: string): ContentItem | null => {
   const currentIndex = allContentItems.findIndex(item => item.id === currentId);
   return currentIndex > 0 ? allContentItems[currentIndex - 1] : null;
+};
+
+export const getFirstItem = (): ContentItem | null => {
+  return allContentItems.length > 0 ? allContentItems[0] : null;
+};
+
+export const getLastItem = (): ContentItem | null => {
+  return allContentItems.length > 0 ? allContentItems[allContentItems.length - 1] : null;
 };

@@ -297,6 +297,12 @@ const generate = async () => {
     `export const getPreviousItem = (currentId: string): ContentItem | null => {\n` +
     `  const currentIndex = allContentItems.findIndex(item => item.id === currentId);\n` +
     `  return currentIndex > 0 ? allContentItems[currentIndex - 1] : null;\n` +
+    `};\n\n` +
+    `export const getFirstItem = (): ContentItem | null => {\n` +
+    `  return allContentItems.length > 0 ? allContentItems[0] : null;\n` +
+    `};\n\n` +
+    `export const getLastItem = (): ContentItem | null => {\n` +
+    `  return allContentItems.length > 0 ? allContentItems[allContentItems.length - 1] : null;\n` +
     `};\n`;
 
   const fileContent = optimizeContent(header + body + helpers);

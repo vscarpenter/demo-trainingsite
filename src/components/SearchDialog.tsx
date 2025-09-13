@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Search, X, FileText, Play, BookOpen } from 'lucide-react';
 import { Button } from './ui/button';
 import { ContentItem, SearchResult } from '@/types/content';
@@ -28,8 +28,7 @@ const SearchDialog: React.FC<SearchDialogProps> = ({
 
   // Debounced search function
   const latestReq = useRef(0);
-  const debouncedSearch = useCallback(
-    debounce(async (query: string) => {
+  const runSearch = useCallback(async (query: string) => {
       const reqId = ++latestReq.current;
       // Fast header-only results for responsiveness
       const quick = searchContent(contentItems, query);
@@ -47,9 +46,9 @@ const SearchDialog: React.FC<SearchDialogProps> = ({
       } catch {
         // ignore
       }
-    }, 300),
-    [contentItems]
-  );
+  }, [contentItems]);
+
+  const debouncedSearch = useMemo(() => debounce(runSearch, 300), [runSearch]);
 
   // Handle search input change
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {

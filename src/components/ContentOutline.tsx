@@ -25,97 +25,74 @@ const ContentOutline: React.FC<ContentOutlineProps> = ({
     });
   }, []);
 
-  // -- Persistence helpers --
-  const SECTIONS_KEY = 'sidebar:expandedSections';
-  const SUBSECTIONS_KEY = 'sidebar:expandedSubsections';
-  const readMap = (key: string): Record<string, boolean> | null => {
-    try {
-      const raw = localStorage.getItem(key);
-      if (!raw) return null;
-      const obj = JSON.parse(raw);
-      if (obj && typeof obj === 'object') return obj as Record<string, boolean>;
-      return null;
-    } catch {
-      return null;
-    }
-  };
-  const writeMap = (key: string, value: Record<string, boolean>) => {
-    try {
-      localStorage.setItem(key, JSON.stringify(value));
-    } catch {}
-  };
+  // Simplified navigation - no persistence needed
 
-  const isSubsectionActive = (subsectionItems: ContentItem[]) =>
-    subsectionItems.some(item => item.id === currentContentId);
+  const isSubsectionActive = React.useCallback((subsectionItems: ContentItem[]) =>
+    subsectionItems.some(item => item.id === currentContentId)
+  , [currentContentId]);
 
-  const isSectionActive = (section: { groupedItems: Record<string, ContentItem[]> }) =>
-    Object.values(section.groupedItems).some(items => isSubsectionActive(items));
+  const isSectionActive = React.useCallback((section: { groupedItems: Record<string, ContentItem[]> }) =>
+    Object.values(section.groupedItems).some(items => isSubsectionActive(items))
+  , [isSubsectionActive]);
 
-  // Manage expanded state for sections and subsections
+  // Simplified: Only show current section expanded, others collapsed
   const [expandedSections, setExpandedSections] = React.useState<Record<string, boolean>>(() => {
-    const stored = readMap(SECTIONS_KEY);
     const init: Record<string, boolean> = {};
-    // Determine which section contains the current item (for deep-links)
-    let targetSectionId: string | null = null;
-    if (!stored && currentContentId) {
+    
+    // Find current section
+    let currentSectionId: string | null = null;
+    if (currentContentId) {
       for (const sec of groupedSections) {
         const contains = Object.values(sec.groupedItems).some(items =>
           items.some(i => i.id === currentContentId)
         );
-        if (contains) { targetSectionId = sec.id; break; }
+        if (contains) { 
+          currentSectionId = sec.id; 
+          break; 
+        }
       }
     }
+    
+    // Only expand current section, or first section if none
     groupedSections.forEach((sec, idx) => {
-      if (stored) {
-        init[sec.id] = !!stored[sec.id];
-      } else if (targetSectionId) {
-        init[sec.id] = sec.id === targetSectionId;
-      } else {
-        init[sec.id] = idx === 0; // default open first section
-      }
+      init[sec.id] = sec.id === currentSectionId || (idx === 0 && !currentSectionId);
     });
+    
     return init;
   });
 
+  // Simplified: Only show current subsection expanded
   const [expandedSubsections, setExpandedSubsections] = React.useState<Record<string, boolean>>(() => {
-    const stored = readMap(SUBSECTIONS_KEY);
     const init: Record<string, boolean> = {};
-    let target: string | null = null;
-    if (!stored && currentContentId) {
+    
+    // Find current subsection
+    let currentSubsectionKey: string | null = null;
+    if (currentContentId) {
       for (const sec of groupedSections) {
         for (const [subKey, items] of Object.entries(sec.groupedItems)) {
           if (items.some(i => i.id === currentContentId)) {
-            target = `${sec.id}::${subKey}`;
+            currentSubsectionKey = `${sec.id}::${subKey}`;
             break;
           }
         }
-        if (target) break;
+        if (currentSubsectionKey) break;
       }
     }
+    
+    // Only expand current subsection
     groupedSections.forEach(sec => {
       Object.keys(sec.groupedItems).forEach(subKey => {
         const key = `${sec.id}::${subKey}`;
-        if (stored) {
-          init[key] = !!stored[key];
-        } else if (target) {
-          init[key] = key === target;
-        } else {
-          init[key] = false;
-        }
+        init[key] = key === currentSubsectionKey;
       });
     });
+    
     return init;
   });
 
-  // Persist when changes occur
-  React.useEffect(() => {
-    writeMap(SECTIONS_KEY, expandedSections);
-  }, [expandedSections]);
-  React.useEffect(() => {
-    writeMap(SUBSECTIONS_KEY, expandedSubsections);
-  }, [expandedSubsections]);
+  // Simplified navigation - no persistence needed
 
-  // Keep expansion in sync when currentContentId changes (e.g., via Next/Prev)
+  // Keep expansion in sync when currentContentId changes (e.g., via Next/Prev or Search)
   const didMountRef = React.useRef(false);
   React.useEffect(() => {
     if (!didMountRef.current) {
@@ -123,69 +100,98 @@ const ContentOutline: React.FC<ContentOutlineProps> = ({
       didMountRef.current = true;
       return;
     }
+    
+    console.log('ContentOutline: currentContentId changed to:', currentContentId);
+    
+    // Find the current section and subsection
+    let currentSectionId: string | null = null;
+    let currentSubsectionKey: string | null = null;
+    
+    if (currentContentId) {
+      for (const sec of groupedSections) {
+        for (const [subKey, items] of Object.entries(sec.groupedItems)) {
+          if (items.some(i => i.id === currentContentId)) {
+            currentSectionId = sec.id;
+            currentSubsectionKey = `${sec.id}::${subKey}`;
+            break;
+          }
+        }
+        if (currentSectionId) break;
+      }
+    }
+    
+    console.log('ContentOutline: Found section:', currentSectionId, 'subsection:', currentSubsectionKey);
+    
+    // Update sections - close all, open only current
     setExpandedSections(prev => {
-      const next = { ...prev };
+      const next: Record<string, boolean> = {};
       groupedSections.forEach(sec => {
-        if (isSectionActive(sec)) next[sec.id] = true;
+        next[sec.id] = sec.id === currentSectionId;
       });
+      console.log('ContentOutline: Setting expanded sections:', next);
       return next;
     });
+    
+    // Update subsections - close all, open only current
     setExpandedSubsections(prev => {
-      const next = { ...prev };
+      const next: Record<string, boolean> = {};
       groupedSections.forEach(sec => {
-        Object.entries(sec.groupedItems).forEach(([subKey, items]) => {
+        Object.keys(sec.groupedItems).forEach(subKey => {
           const key = `${sec.id}::${subKey}`;
-          if (isSubsectionActive(items)) next[key] = true;
+          next[key] = key === currentSubsectionKey;
         });
       });
+      console.log('ContentOutline: Setting expanded subsections:', next);
       return next;
     });
   }, [currentContentId, groupedSections]);
 
-  const toggleSection = (sectionId: string) =>
-    setExpandedSections(s => ({ ...s, [sectionId]: !s[sectionId] }));
+  // Simplified: Only one section open at a time
+  const toggleSection = (sectionId: string) => {
+    setExpandedSections(prev => {
+      const newState: Record<string, boolean> = {};
+      // Close all sections first
+      groupedSections.forEach(sec => {
+        newState[sec.id] = false;
+      });
+      // Open only the clicked section if it wasn't already open
+      if (!prev[sectionId]) {
+        newState[sectionId] = true;
+      }
+      return newState;
+    });
+  };
 
+  // Simplified: Only one subsection open at a time within a section
   const toggleSubsection = (sectionId: string, subKey: string) => {
     const key = `${sectionId}::${subKey}`;
-    setExpandedSubsections(s => ({ ...s, [key]: !s[key] }));
+    setExpandedSubsections(prev => {
+      const newState = { ...prev };
+      
+      // Close all subsections in this section first
+      const section = groupedSections.find(s => s.id === sectionId);
+      if (section) {
+        Object.keys(section.groupedItems).forEach(sub => {
+          newState[`${sectionId}::${sub}`] = false;
+        });
+      }
+      
+      // Open only the clicked subsection if it wasn't already open
+      if (!prev[key]) {
+        newState[key] = true;
+      }
+      
+      return newState;
+    });
   };
 
   return (
-    <div className="space-y-3">
-      {/* Bulk expand/collapse controls */}
-      <div className="flex items-center justify-end mb-1">
-        {(() => {
-          const allExpanded = Object.values(expandedSections).every(Boolean) && Object.values(expandedSubsections).every(Boolean);
-          const label = allExpanded ? 'Collapse all' : 'Expand all';
-          const handleToggleAll = () => {
-            const nextVal = !allExpanded;
-            setExpandedSections(() => {
-              const m: Record<string, boolean> = {};
-              groupedSections.forEach(sec => { m[sec.id] = nextVal; });
-              return m;
-            });
-            setExpandedSubsections(() => {
-              const m: Record<string, boolean> = {};
-              groupedSections.forEach(sec => {
-                Object.keys(sec.groupedItems).forEach(sub => { m[`${sec.id}::${sub}`] = nextVal; });
-              });
-              return m;
-            });
-          };
-          return (
-            <button
-              type="button"
-              onClick={handleToggleAll}
-              className="text-xs text-ms-blue hover:underline px-2 py-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              aria-label={`${label} sections and subsections`}
-            >
-              {label}
-            </button>
-          );
-        })()}
-      </div>
+    <div className="space-y-2">
       {groupedSections.map((section) => {
         const sectionExpanded = expandedSections[section.id];
+        const totalItems = Object.values(section.groupedItems).flat().length;
+        const isActive = isSectionActive(section);
+        
         return (
           <div key={section.id}>
             {/* Section header (collapsible) */}
@@ -193,16 +199,22 @@ const ContentOutline: React.FC<ContentOutlineProps> = ({
               type="button"
               onClick={() => toggleSection(section.id)}
               aria-expanded={!!sectionExpanded}
-              className={`w-full flex items-center justify-between px-2 py-2 rounded-md text-sm font-semibold
-                text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500`}
+              className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-sm font-semibold transition-colors
+                ${isActive 
+                  ? 'bg-ms-blue/10 border border-ms-blue/20 text-ms-blue' 
+                  : 'text-foreground hover:bg-muted'
+                } focus:outline-none focus:ring-2 focus:ring-ms-blue/20`}
             >
               <span className="flex items-center space-x-2">
                 {sectionExpanded ? (
-                  <ChevronDown className="h-4 w-4 text-gray-500" />
+                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
                 ) : (
-                  <ChevronRight className="h-4 w-4 text-gray-500" />
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
                 )}
-                <span>{section.title}</span>
+                <span className="truncate">{section.title}</span>
+              </span>
+              <span className="ml-2 text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">
+                {totalItems}
               </span>
             </button>
 
@@ -223,21 +235,21 @@ const ContentOutline: React.FC<ContentOutlineProps> = ({
                         onClick={() => toggleSubsection(section.id, subsectionKey)}
                         aria-expanded={isOpen}
                         className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-xs transition-colors
-                          hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500
-                          ${isActive ? 'bg-blue-50 border border-blue-200 text-blue-900' : 'text-gray-800'}`}
+                          hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ms-blue/20
+                          ${isActive ? 'bg-ms-blue/10 border border-ms-blue/20 text-ms-blue' : 'text-foreground'}`}
                       >
                         <span className="flex items-center space-x-2">
                           {isOpen ? (
-                            <ChevronDown className="h-4 w-4 text-gray-500" />
+                            <ChevronDown className="h-4 w-4 text-muted-foreground" />
                           ) : (
-                            <ChevronRight className="h-4 w-4 text-gray-500" />
+                            <ChevronRight className="h-4 w-4 text-muted-foreground" />
                           )}
-                          <span className={`${isMainSection ? 'text-green-600' : 'text-blue-600'}`}>
+                          <span className={`${isMainSection ? 'text-green-500' : 'text-ms-blue'}`}>
                             {isMainSection ? <BookOpen className="h-4 w-4" /> : <FileText className="h-4 w-4" />}
                           </span>
                           <span className="truncate font-medium">{subsectionName}</span>
                         </span>
-                        <span className="ml-2 text-[10px] text-gray-500">{items.length}</span>
+                        <span className="ml-2 text-[10px] text-muted-foreground">{items.length}</span>
                       </button>
 
                       {/* Items list */}
@@ -254,13 +266,13 @@ const ContentOutline: React.FC<ContentOutlineProps> = ({
                                   type="button"
                                   onClick={() => onContentSelect?.(item.id)}
                                   className={`w-full text-left px-3 py-1.5 rounded-md text-xs flex items-center justify-between
-                                    hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500
-                                    ${activeItem ? 'bg-blue-100 text-blue-900' : 'text-gray-700'}`}
+                                    hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ms-blue/20
+                                    ${activeItem ? 'bg-ms-blue/10 text-ms-blue' : 'text-foreground'}`}
                                 >
                                   <span className="truncate block">{item.title}</span>
                                   <span className="ml-2 shrink-0">
                                     {isCompleted && (
-                                      <Check className={`h-3.5 w-3.5 ${activeItem ? 'text-blue-700' : 'text-gray-500'}`} />
+                                      <Check className={`h-3.5 w-3.5 ${activeItem ? 'text-ms-blue' : 'text-muted-foreground'}`} />
                                     )}
                                   </span>
                                 </button>
