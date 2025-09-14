@@ -83,10 +83,12 @@ upload_gzipped_assets_parallel() {
   done
   
   # Wait for all remaining jobs
-  for pid in "${pids[@]}"; do
-    wait "$pid"
-  done
-  
+  if [ ${#pids[@]} -gt 0 ]; then
+    for pid in "${pids[@]}"; do
+      wait "$pid"
+    done
+  fi
+
   echo "✅ Gzipped assets upload completed"
 }
 
@@ -125,10 +127,12 @@ upload_gzipped_html_parallel() {
   done < <(find "${dist_dir}" -name "*.html.gz" -type f -print0)
   
   # Wait for all remaining jobs
-  for pid in "${pids[@]}"; do
-    wait "$pid"
-  done
-  
+  if [ ${#pids[@]} -gt 0 ]; then
+    for pid in "${pids[@]}"; do
+      wait "$pid"
+    done
+  fi
+
   echo "✅ Gzipped HTML upload completed"
 }
 
@@ -161,10 +165,12 @@ upload_metadata_parallel() {
   fi
   
   # Wait for all metadata uploads to complete
-  for pid in "${pids[@]}"; do
-    wait "$pid"
-  done
-  
+  if [ ${#pids[@]} -gt 0 ]; then
+    for pid in "${pids[@]}"; do
+      wait "$pid"
+    done
+  fi
+
   echo "✅ Metadata upload completed"
 }
 
@@ -323,11 +329,13 @@ POLICY_END
   
   # Wait for all S3 configuration tasks to complete
   local failed=0
-  for pid in "${pids[@]}"; do
-    if ! wait "$pid"; then
-      failed=1
-    fi
-  done
+  if [ ${#pids[@]} -gt 0 ]; then
+    for pid in "${pids[@]}"; do
+      if ! wait "$pid"; then
+        failed=1
+      fi
+    done
+  fi
   
   if [ $failed -eq 0 ]; then
     echo "✅ S3 configuration completed successfully"
@@ -359,11 +367,13 @@ setup_aws_infrastructure_parallel() {
   
   # Wait for both operations to complete
   local failed=0
-  for pid in "${pids[@]}"; do
-    if ! wait "$pid"; then
-      failed=1
-    fi
-  done
+  if [ ${#pids[@]} -gt 0 ]; then
+    for pid in "${pids[@]}"; do
+      if ! wait "$pid"; then
+        failed=1
+      fi
+    done
+  fi
   
   if [ $failed -eq 0 ]; then
     echo "✅ AWS infrastructure setup completed successfully"

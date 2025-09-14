@@ -1,14 +1,31 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
+import fs from 'fs'
+
+// Plugin to copy content manifest to dist directory
+const copyContentManifestPlugin = () => ({
+  name: 'copy-content-manifest',
+  writeBundle() {
+    const srcPath = path.resolve(__dirname, 'src/data/content-manifest.json')
+    const distPath = path.resolve(__dirname, 'dist/content-manifest.json')
+
+    if (fs.existsSync(srcPath)) {
+      fs.copyFileSync(srcPath, distPath)
+      console.log('✅ Copied content-manifest.json to dist/')
+    } else {
+      console.warn('⚠️  content-manifest.json not found in src/data/')
+    }
+  }
+})
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
   // Load env file based on `mode` in the current working directory.
   const env = loadEnv(mode, process.cwd(), '')
-  
+
   return {
-    plugins: [react()],
+    plugins: [react(), copyContentManifestPlugin()],
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
